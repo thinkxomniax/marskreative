@@ -941,8 +941,6 @@
     const niches = [...document.querySelectorAll('#nicheGroup .chip-input:checked')].map(c => c.value).join(', ');
     const styles = [...document.querySelectorAll('#step2 .chip-input:checked')].map(c => c.value).join(', ');
     const fIG = parseInt(document.getElementById('followersIG').value || 0).toLocaleString('id-ID');
-    const rIG = parseInt(document.getElementById('rateIGFeed').value || 0);
-    const rTT = parseInt(document.getElementById('rateTT').value || 0);
 
     const avail = [...document.querySelectorAll('#availabilityGroup .chip-input:checked')].map(c => c.value).join(', ');
     const rows = [
