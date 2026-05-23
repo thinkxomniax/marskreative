@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar sebagai Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --ink-soft: #5a5852;
+    --ink-ghost: #a8a49e;
+    --paper: #faf8f4;
+    --paper-warm: #f2ede4;
+    --accent: #c8622a;
+    --accent-soft: #f0ddd1;
+    --success: #2a7a4b;
+    --success-soft: #d4ede0;
+    --error: #b02a2a;
+    --error-soft: #f0d4d4;
+    --border: #ddd8d0;
+    --radius: 12px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .header {
+    background: var(--ink);
+    padding: 28px 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    right: -20px; bottom: -30px;
+    width: 120px; height: 120px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    right: 20px; bottom: -50px;
+    width: 80px; height: 80px;
+    border: 1.5px solid rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: #fff;
+    line-height: 1.2;
+    font-weight: 400;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+  .header p {
+    margin-top: 10px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+  }
+
+  /* Progress */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* Form container */
+  .form-wrap {
+    padding: 0 20px 48px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Steps */
+  .step {
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+  .step.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-header {
+    padding: 28px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .step-num {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+    margin-bottom: 4px;
+  }
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  /* Fields */
+  .field {
+    margin-bottom: 20px;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .field label .req {
+    color: var(--accent);
+    margin-left: 2px;
+  }
+  .field label .opt {
+    color: var(--ink-ghost);
+    font-weight: 300;
+    font-size: 11px;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  input.error, select.error, textarea.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px var(--error-soft);
+  }
+  input.valid {
+    border-color: var(--success);
+  }
+
+  /* IG field with @ prefix */
+  .ig-wrap {
+    position: relative;
+  }
+  .ig-wrap input {
+    padding-left: 36px;
+  }
+  .ig-prefix {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-ghost);
+    font-size: 15px;
+    pointer-events: none;
+    line-height: 1;
+  }
+  .ig-checking {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--ink-ghost);
+  }
+
+  textarea {
+    resize: none;
+    min-height: 88px;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8a49e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  /* Checkbox group */
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .checkbox-group label {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+  .chip-input {
+    display: none;
+  }
+  .chip {
+    display: inline-block;
+    padding: 7px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+    user-select: none;
+  }
+  .chip-input:checked + .chip {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  /* Helper text */
+  .helper {
+    font-size: 12px;
+    color: var(--ink-ghost);
+    margin-top: 6px;
+  }
+  .field-error {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 6px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+
+  /* Dedup warning */
+  .dedup-warning {
+    background: var(--error-soft);
+    border: 1.5px solid #f0b4b4;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--error);
+    display: none;
+  }
+  .dedup-warning.show { display: block; }
+  .dedup-warning strong { display: block; margin-bottom: 2px; font-weight: 500; }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 20px;
+    color: var(--ink-ghost);
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Rate row */
+  .rate-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .rate-field label {
+    font-size: 11px;
+  }
+
+  /* Nav buttons */
+  .nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-back {
+    flex: 0 0 auto;
+    padding: 14px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  .btn-next {
+    flex: 1;
+    padding: 14px 24px;
+    background: var(--ink);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-next:hover { background: #2a2720; }
+  .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-next.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .btn-next.loading .spinner { display: block; }
+  .btn-next.loading .btn-label { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn-submit {
+    flex: 1;
+    padding: 14px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-submit:hover { background: #b0541f; }
+  .btn-submit.loading { pointer-events: none; opacity: 0.7; }
+
+  /* Summary card */
+  .summary-card {
+    background: var(--paper-warm);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-key {
+    font-size: 12px;
+    color: var(--ink-ghost);
+    flex: 0 0 110px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .summary-val {
+    font-size: 13px;
+    color: var(--ink);
+    text-align: right;
+    word-break: break-word;
+  }
+
+  /* Success state */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    animation: fadeUp 0.5s ease;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 64px; height: 64px;
+    background: var(--success-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+  }
+  .success-icon svg { width: 28px; height: 28px; stroke: var(--success); }
+  .success-id {
+    display: inline-block;
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 22px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    margin: 16px 0;
+    letter-spacing: 0.02em;
+  }
+  .success-note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+
+  /* Step indicator dots */
+  .step-dots {
+    display: flex;
+    gap: 6px;
+    padding: 16px 20px 0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+  .dot.done { background: var(--ink); }
+
+  @media (max-width: 380px) {
+    .header h1 { font-size: 24px; }
+    .rate-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Creator Registration</div>
+  <h1>Bergabung sebagai<br><em>Creator Partner</em></h1>
+  <p>Isi data dengan lengkap dan jujur — tim kami akan review dalam 1–2 hari kerja.</p>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="step-dots" id="stepDots">
+  <div class="dot active" id="dot0"></div>
+  <div class="dot" id="dot1"></div>
+  <div class="dot" id="dot2"></div>
+  <div class="dot" id="dot3"></div>
+</div>
+
+<div class="form-wrap">
+
+  <!-- Step 0: Identitas -->
+  <div class="step active" id="step0">
+    <div class="step-header">
+      <div class="step-num">Langkah 1 dari 4</div>
+      <div class="step-title">Identitas & Platform</div>
+    </div>
+
+    <div class="field">
+      <label>Nama lengkap <span class="req">*</span></label>
+      <input type="text" id="fullName" placeholder="Nama asli kamu" autocomplete="name">
+      <div class="field-error" id="err-fullName">Nama wajib diisi</div>
+    </div>
+
+    <div class="field">
+      <label>Username Instagram <span class="req">*</span>
+        <span class="opt">— ini jadi Creator ID kamu</span>
+      </label>
+      <div class="ig-wrap">
+        <span class="ig-prefix">@</span>
+        <input type="text" id="igUsername" placeholder="usernamekamu" autocorrect="off" autocapitalize="none">
+        <span class="ig-checking" id="igChecking"></span>
+      </div>
+      <div class="dedup-warning" id="dedupWarning">
+        <strong>Username ini sudah terdaftar.</strong>
+        Kalau kamu perlu update data, hubungi admin di WA community.
+      </div>
+      <div class="field-error" id="err-igUsername">Username IG wajib diisi</div>
+      <div class="helper">Tanpa @, contoh: <strong>rizkyandini</strong></div>
+    </div>
+
+    <div class="field">
+      <label>Username TikTok <span class="opt">(opsional)</span></label>
+      <div class="ig-wrap">
+        <span class="ig-prefix">@</span>
+        <input type="text" id="tiktokUsername" placeholder="usernamekamu" autocorrect="off" autocapitalize="none">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Platform utama <span class="req">*</span></label>
+      <select id="primaryPlatform">
+        <option value="">Pilih platform</option>
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="both">Keduanya</option>
+      </select>
+      <div class="field-error" id="err-primaryPlatform">Pilih platform utama</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-next" id="nextBtn0" onclick="nextStep(0)">
+        <span class="btn-label">Lanjut</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 1: Statistik -->
+  <div class="step" id="step1">
+    <div class="step-header">
+      <div class="step-num">Langkah 2 dari 4</div>
+      <div class="step-title">Statistik & Audiens</div>
+    </div>
+
+    <div class="field">
+      <label>Followers Instagram <span class="req">*</span></label>
+      <input type="number" id="followersIG" placeholder="45000" min="0">
+      <div class="field-error" id="err-followersIG">Isi jumlah followers IG</div>
+    </div>
+
+    <div class="field">
+      <label>Followers TikTok <span class="opt">(opsional)</span></label>
+      <input type="number" id="followersTT" placeholder="80000" min="0">
+    </div>
+
+    <div class="field">
+      <label>Niche konten <span class="req">*</span></label>
+      <div class="checkbox-group" id="nicheGroup">
+        <label><input type="checkbox" class="chip-input" value="F&B"><span class="chip">F&B</span></label>
+        <label><input type="checkbox" class="chip-input" value="Lifestyle"><span class="chip">Lifestyle</span></label>
+        <label><input type="checkbox" class="chip-input" value="Beauty"><span class="chip">Beauty</span></label>
+        <label><input type="checkbox" class="chip-input" value="Fashion"><span class="chip">Fashion</span></label>
+        <label><input type="checkbox" class="chip-input" value="Travel"><span class="chip">Travel</span></label>
+        <label><input type="checkbox" class="chip-input" value="Parenting"><span class="chip">Parenting</span></label>
+        <label><input type="checkbox" class="chip-input" value="Edukasi"><span class="chip">Edukasi</span></label>
+        <label><input type="checkbox" class="chip-input" value="Gaming"><span class="chip">Gaming</span></label>
+      </div>
+      <div class="field-error" id="err-niche">Pilih minimal 1 niche</div>
+    </div>
+
+    <div class="field">
+      <label>Domisili <span class="req">*</span></label>
+      <select id="domisili">
+        <option value="">Pilih kota</option>
+        <option>Batam</option><option>Jakarta Selatan</option><option>Jakarta Pusat</option>
+        <option>Jakarta Barat</option><option>Jakarta Timur</option>
+        <option>Jakarta Utara</option><option>Bekasi</option>
+        <option>Tangerang</option><option>Depok</option>
+        <option>Bogor</option><option>Bandung</option>
+        <option>Surabaya</option><option>Yogyakarta</option>
+        <option>Semarang</option><option>Medan</option>
+        <option>Makassar</option><option>Bali</option>
+        <option>Lainnya</option>
+      </select>
+      <div class="field-error" id="err-domisili">Pilih domisili</div>
+    </div>
+
+    <div class="field">
+      <label>Demografi audiens <span class="opt">(opsional)</span></label>
+      <input type="text" id="audienceAge" placeholder="Contoh: 18–25 tahun, 65% perempuan">
+      <div class="helper">Info dari Instagram Insights atau TikTok Analytics kamu</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(1)">Kembali</button>
+      <button class="btn-next" onclick="nextStep(1)">
+        <span class="btn-label">Lanjut</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Konten & Ketersediaan -->
+  <div class="step" id="step2">
+    <div class="step-header">
+      <div class="step-num">Langkah 3 dari 4</div>
+      <div class="step-title">Konten & Ketersediaan</div>
+    </div>
+
+    <div class="field">
+      <label>Gaya konten <span class="req">*</span></label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" class="chip-input" value="Candid"><span class="chip">Candid</span></label>
+        <label><input type="checkbox" class="chip-input" value="Aesthetic"><span class="chip">Aesthetic</span></label>
+        <label><input type="checkbox" class="chip-input" value="Review"><span class="chip">Review</span></label>
+        <label><input type="checkbox" class="chip-input" value="Tutorial"><span class="chip">Tutorial</span></label>
+        <label><input type="checkbox" class="chip-input" value="GRWM"><span class="chip">GRWM</span></label>
+        <label><input type="checkbox" class="chip-input" value="Vlog"><span class="chip">Vlog</span></label>
+        <label><input type="checkbox" class="chip-input" value="Talking head"><span class="chip">Talking head</span></label>
+      </div>
+      <div class="field-error" id="err-style">Pilih minimal 1 gaya konten</div>
+    </div>
+
+    <div class="field">
+      <label>Seberapa sering kamu posting konten? <span class="req">*</span></label>
+      <select id="postingFrequency">
+        <option value="">Pilih frekuensi</option>
+        <option value="1-2x seminggu">1–2x seminggu</option>
+        <option value="3-4x seminggu">3–4x seminggu</option>
+        <option value="5-6x seminggu">5–6x seminggu</option>
+        <option value="Setiap hari">Setiap hari</option>
+        <option value="Tidak menentu">Tidak menentu</option>
+      </select>
+      <div class="helper">Rata-rata posting organik kamu, bukan konten endorse</div>
+      <div class="field-error" id="err-postingFrequency">Pilih frekuensi posting</div>
+    </div>
+
+    <div class="field">
+      <label>Pengalaman endorse sebelumnya <span class="req">*</span></label>
+      <select id="endorseExp">
+        <option value="">Pilih pengalaman</option>
+        <option value="Belum pernah">Belum pernah endorse</option>
+        <option value="Kurang dari 6 bulan">Kurang dari 6 bulan</option>
+        <option value="6 bulan - 1 tahun">6 bulan – 1 tahun</option>
+        <option value="1-2 tahun">1–2 tahun</option>
+        <option value="Lebih dari 2 tahun">Lebih dari 2 tahun</option>
+      </select>
+      <div class="field-error" id="err-endorseExp">Pilih pengalaman endorse</div>
+    </div>
+
+    <div class="field">
+      <label>Brand / kategori yang pernah kamu endorse <span class="opt">(opsional)</span></label>
+      <input type="text" id="endorseBrands" placeholder="Contoh: kopi lokal, skincare, F&B Batam">
+      <div class="helper">Tulis singkat, tidak harus nama brand spesifik</div>
+    </div>
+
+    <div class="field">
+      <label>Kapan kamu tersedia untuk endorse? <span class="req">*</span></label>
+      <div class="checkbox-group" id="availabilityGroup">
+        <label><input type="checkbox" class="chip-input" value="Senin"><span class="chip">Senin</span></label>
+        <label><input type="checkbox" class="chip-input" value="Selasa"><span class="chip">Selasa</span></label>
+        <label><input type="checkbox" class="chip-input" value="Rabu"><span class="chip">Rabu</span></label>
+        <label><input type="checkbox" class="chip-input" value="Kamis"><span class="chip">Kamis</span></label>
+        <label><input type="checkbox" class="chip-input" value="Jumat"><span class="chip">Jumat</span></label>
+        <label><input type="checkbox" class="chip-input" value="Sabtu"><span class="chip">Sabtu</span></label>
+        <label><input type="checkbox" class="chip-input" value="Minggu"><span class="chip">Minggu</span></label>
+      </div>
+      <div class="helper">Hari kerja yang kamu bisa untuk ambil project endorse</div>
+      <div class="field-error" id="err-availability">Pilih minimal 1 hari</div>
+    </div>
+
+    <div class="field">
+      <label>Nomor WhatsApp <span class="req">*</span></label>
+      <input type="tel" id="contactWA" placeholder="08xxxxxxxxxx" autocomplete="tel">
+      <div class="helper">Nomor aktif yang bisa dihubungi tim kami</div>
+      <div class="field-error" id="err-contactWA">Nomor WA wajib diisi</div>
+    </div>
+
+    <div class="field">
+      <label>Contoh konten terbaik <span class="opt">(opsional)</span></label>
+      <input type="text" id="portfolioUrl" placeholder="Link IG post / TikTok video kamu">
+      <div class="helper">1 post yang paling merepresentasikan gaya kontenmu</div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(2)">Kembali</button>
+      <button class="btn-next" onclick="nextStep(2)">
+        <span class="btn-label">Review data</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Review & Submit -->
+  <div class="step" id="step3">
+    <div class="step-header">
+      <div class="step-num">Langkah 4 dari 4</div>
+      <div class="step-title">Cek & Kirim</div>
+    </div>
+
+    <div class="summary-card" id="summaryCard"></div>
+
+    <div style="font-size:13px;color:var(--ink-soft);line-height:1.7;padding:4px 0 8px;">
+      Dengan mendaftar, kamu setuju bahwa data ini akan digunakan oleh tim internal untuk keperluan campaign matching. Data kamu tidak dibagikan ke pihak luar.
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevStep(3)">Kembali</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitForm()">
+        <span class="btn-label">Kirim pendaftaran</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Success screen -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </div>
+  <div style="font-family:'DM Serif Display',serif;font-size:26px;color:#0f0e0c;font-weight:400;">
+    Pendaftaran terkirim!
+  </div>
+  <div class="success-id" id="successId">@username</div>
+  <div class="success-note">
+    Creator ID kamu adalah username IG di atas.<br>
+    <strong>Screenshot atau catat ID ini</strong> — kamu butuhkan untuk apply campaign.<br><br>
+    Tim kami akan review dalam <strong>1–2 hari kerja</strong> dan konfirmasi via WA.
+  </div>
+  <div style="margin-top:28px;">
+    <div style="font-size:12px;color:#a8a49e;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em;">Langkah selanjutnya</div>
+    <a href="https://chat.whatsapp.com/XXXXXXXXX" target="_blank" style="text-decoration:none;">
+      <div style="display:inline-flex;align-items:center;gap:12px;background:#1a6b4a;color:#fff;padding:14px 24px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.122 1.531 5.858L.057 23.868a.999.999 0 001.215 1.188l6.123-1.605A11.942 11.942 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.693-.524-5.228-1.433l-.374-.222-3.88 1.018 1.037-3.793-.244-.393A9.955 9.955 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        Join WA Community Creator
+      </div>
+    </a>
+    <div style="font-size:12px;color:#a8a49e;margin-top:10px;">Info campaign & update terbaru ada di sana</div>
+  </div>
+</div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────
+  // Ganti dengan URL GAS Web App kamu setelah deploy
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyv6GMG2zgOUrEu4zx1l7J0ifyAt5QA0vBPCHvSif0XLjkh_OpYIaZG4WzwC4--idYH/exec';
+  const DEMO_MODE = true; // Set false setelah GAS siap
+
+  // ─── STATE ────────────────────────────────────────────────
+  let currentStep = 0;
+  const totalSteps = 4;
+  let igCheckTimer = null;
+  let igIsValid = false;
+
+  // ─── PROGRESS ─────────────────────────────────────────────
+  function updateProgress() {
+    const pct = (currentStep / (totalSteps - 1)) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    for (let i = 0; i < totalSteps; i++) {
+      const dot = document.getElementById('dot' + i);
+      dot.className = 'dot' + (i === currentStep ? ' active' : i < currentStep ? ' done' : '');
+    }
+  }
+
+  // ─── NAVIGATION ───────────────────────────────────────────
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    currentStep = n;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevStep(from) { showStep(from - 1); }
+
+  function nextStep(from) {
+    if (!validateStep(from)) return;
+    if (from === 2) buildSummary();
+    showStep(from + 1);
+  }
+
+  // ─── VALIDATION ───────────────────────────────────────────
+  function showErr(id, show) {
+    const el = document.getElementById('err-' + id);
+    if (el) el.classList.toggle('show', show);
+  }
+  function markField(id, valid) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('error', !valid);
+    el.classList.toggle('valid', valid);
+  }
+
+  function validateStep(step) {
+    let ok = true;
+
+    if (step === 0) {
+      const name = document.getElementById('fullName').value.trim();
+      const ig = document.getElementById('igUsername').value.trim();
+      const plat = document.getElementById('primaryPlatform').value;
+      const dedup = document.getElementById('dedupWarning').classList.contains('show');
+
+      if (!name) { showErr('fullName', true); markField('fullName', false); ok = false; }
+      else { showErr('fullName', false); markField('fullName', true); }
+
+      if (!ig || dedup) { showErr('igUsername', !ig); markField('igUsername', false); ok = false; }
+      else { showErr('igUsername', false); markField('igUsername', true); }
+
+      if (!plat) { showErr('primaryPlatform', true); markField('primaryPlatform', false); ok = false; }
+      else { showErr('primaryPlatform', false); markField('primaryPlatform', true); }
+    }
+
+    if (step === 1) {
+      const fIG = document.getElementById('followersIG').value;
+      const niches = [...document.querySelectorAll('#nicheGroup .chip-input:checked')];
+      const dom = document.getElementById('domisili').value;
+
+      if (!fIG || parseInt(fIG) < 0) { showErr('followersIG', true); markField('followersIG', false); ok = false; }
+      else { showErr('followersIG', false); markField('followersIG', true); }
+
+      if (niches.length === 0) { showErr('niche', true); ok = false; }
+      else { showErr('niche', false); }
+
+      if (!dom) { showErr('domisili', true); markField('domisili', false); ok = false; }
+      else { showErr('domisili', false); markField('domisili', true); }
+    }
+
+    if (step === 2) {
+      const styles = [...document.querySelectorAll('#step2 .chip-input:checked')].filter(c=>!['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'].includes(c.value));
+      const avail = [...document.querySelectorAll('#availabilityGroup .chip-input:checked')];
+      const freq = document.getElementById('postingFrequency').value;
+      const endorse = document.getElementById('endorseExp').value;
+      const wa = document.getElementById('contactWA').value.trim();
+
+      if (styles.length === 0) { showErr('style', true); ok = false; }
+      else { showErr('style', false); }
+
+      if (!freq) { showErr('postingFrequency', true); markField('postingFrequency', false); ok = false; }
+      else { showErr('postingFrequency', false); markField('postingFrequency', true); }
+
+      if (!endorse) { showErr('endorseExp', true); markField('endorseExp', false); ok = false; }
+      else { showErr('endorseExp', false); markField('endorseExp', true); }
+
+      if (avail.length === 0) { showErr('availability', true); ok = false; }
+      else { showErr('availability', false); }
+
+      if (!wa) { showErr('contactWA', true); markField('contactWA', false); ok = false; }
+      else { showErr('contactWA', false); markField('contactWA', true); }
+    }
+
+    return ok;
+  }
+
+  // ─── IG DEDUP CHECK ───────────────────────────────────────
+  document.getElementById('igUsername').addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase().replace('@','');
+    this.value = val;
+    document.getElementById('dedupWarning').classList.remove('show');
+    document.getElementById('igChecking').textContent = '';
+    clearTimeout(igCheckTimer);
+    if (val.length < 3) return;
+
+    igCheckTimer = setTimeout(() => {
+      document.getElementById('igChecking').textContent = 'mengecek...';
+      checkDuplicate(val);
+    }, 700);
+  });
+
+  async function checkDuplicate(username) {
+    if (DEMO_MODE) {
+      // Simulasi: anggap "testuser" sudah ada
+      await new Promise(r => setTimeout(r, 600));
+      document.getElementById('igChecking').textContent = '';
+      if (username === 'testuser') {
+        document.getElementById('dedupWarning').classList.add('show');
+        markField('igUsername', false);
+      } else {
+        document.getElementById('dedupWarning').classList.remove('show');
+        markField('igUsername', true);
+      }
+      return;
+    }
+    try {
+      const res = await fetch(`${GAS_URL}?action=checkDuplicate&ig=${username}`);
+      const data = await res.json();
+      document.getElementById('igChecking').textContent = '';
+      if (data.isDuplicate) {
+        document.getElementById('dedupWarning').classList.add('show');
+        markField('igUsername', false);
+      } else {
+        document.getElementById('dedupWarning').classList.remove('show');
+        markField('igUsername', true);
+      }
+    } catch(e) {
+      document.getElementById('igChecking').textContent = '';
+    }
+  }
+
+  // ─── SUMMARY ──────────────────────────────────────────────
+  function buildSummary() {
+    const niches = [...document.querySelectorAll('#nicheGroup .chip-input:checked')].map(c => c.value).join(', ');
+    const styles = [...document.querySelectorAll('#step2 .chip-input:checked')].map(c => c.value).join(', ');
+    const fIG = parseInt(document.getElementById('followersIG').value || 0).toLocaleString('id-ID');
+    const rIG = parseInt(document.getElementById('rateIGFeed').value || 0);
+    const rTT = parseInt(document.getElementById('rateTT').value || 0);
+
+    const avail = [...document.querySelectorAll('#availabilityGroup .chip-input:checked')].map(c => c.value).join(', ');
+    const rows = [
+      ['Creator ID', '@' + document.getElementById('igUsername').value],
+      ['Nama', document.getElementById('fullName').value],
+      ['Platform', document.getElementById('primaryPlatform').value],
+      ['Followers IG', fIG],
+      ['Niche', niches || '—'],
+      ['Domisili', document.getElementById('domisili').value],
+      ['Gaya konten', styles || '—'],
+      ['Posting/minggu', document.getElementById('postingFrequency').value || '—'],
+      ['Endorse exp.', document.getElementById('endorseExp').value || '—'],
+      ['Tersedia', avail || '—'],
+      ['WA', document.getElementById('contactWA').value],
+    ];
+
+    document.getElementById('summaryCard').innerHTML = rows.map(([k, v]) =>
+      `<div class="summary-row"><span class="summary-key">${k}</span><span class="summary-val">${v}</span></div>`
+    ).join('');
+  }
+
+  // ─── SUBMIT ───────────────────────────────────────────────
+  async function submitForm() {
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading');
+
+    const payload = {
+      action: 'registerCreator',
+      fullName: document.getElementById('fullName').value.trim(),
+      igUsername: document.getElementById('igUsername').value.trim(),
+      tiktokUsername: document.getElementById('tiktokUsername').value.trim(),
+      primaryPlatform: document.getElementById('primaryPlatform').value,
+      followersIG: document.getElementById('followersIG').value,
+      followersTT: document.getElementById('followersTT').value,
+      niche: [...document.querySelectorAll('#nicheGroup .chip-input:checked')].map(c => c.value).join(', '),
+      domisili: document.getElementById('domisili').value,
+      audienceAge: document.getElementById('audienceAge').value,
+      styleCategory: [...document.querySelectorAll('#step2 .chip-input:checked')].map(c => c.value).join(', '),
+      postingFrequency: document.getElementById('postingFrequency').value,
+      endorseExperience: document.getElementById('endorseExp').value,
+      endorseBrands: document.getElementById('endorseBrands').value.trim(),
+      availabilityDays: [...document.querySelectorAll('#availabilityGroup .chip-input:checked')].map(c => c.value).join(', '),
+      contactWA: document.getElementById('contactWA').value.trim(),
+      portfolioUrl: document.getElementById('portfolioUrl').value.trim(),
+      submittedAt: new Date().toISOString(),
+    };
+
+    if (DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 1200));
+      showSuccess(payload.igUsername);
+      return;
+    }
+
+    try {
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showSuccess(payload.igUsername);
+      } else {
+        btn.classList.remove('loading');
+        alert('Terjadi kesalahan: ' + (data.message || 'Coba lagi.'));
+      }
+    } catch(e) {
+      btn.classList.remove('loading');
+      alert('Gagal mengirim. Cek koneksi dan coba lagi.');
+    }
+  }
+
+  function showSuccess(username) {
+    document.querySelector('.form-wrap').style.display = 'none';
+    document.querySelector('.step-dots').style.display = 'none';
+    document.getElementById('successId').textContent = '@' + username;
+    document.getElementById('successScreen').classList.add('show');
+    document.getElementById('progressFill').style.width = '100%';
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>

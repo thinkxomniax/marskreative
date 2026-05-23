@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply Campaign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --ink-soft: #5a5852;
+    --ink-ghost: #a8a49e;
+    --paper: #faf8f4;
+    --paper-warm: #f2ede4;
+    --accent: #1a6b4a;
+    --accent-soft: #d4ede0;
+    --accent-mid: #2a7a4b;
+    --surface: #fff;
+    --error: #b02a2a;
+    --error-soft: #f0d4d4;
+    --warning: #7a5a1a;
+    --warning-soft: #f5e8c8;
+    --border: #ddd8d0;
+    --radius: 12px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .header {
+    background: var(--accent);
+    padding: 28px 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    right: -20px; bottom: -30px;
+    width: 120px; height: 120px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .header-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: #fff;
+    line-height: 1.25;
+    font-weight: 400;
+  }
+  .header h1 em { font-style: italic; opacity: 0.7; }
+
+  /* Campaign badge */
+  .campaign-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 999px;
+    padding: 6px 14px 6px 8px;
+    margin-top: 14px;
+  }
+  .campaign-badge-dot {
+    width: 8px; height: 8px;
+    background: #7fe8b2;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .campaign-badge span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 400;
+  }
+
+  /* Slot indicator */
+  .slot-bar-wrap {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+  }
+  .slot-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .slot-bar-label strong { color: var(--ink); }
+  .slot-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .slot-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.6s ease;
+  }
+
+  .wrap {
+    padding: 0 20px 60px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Screens */
+  .screen { display: none; }
+  .screen.active {
+    display: block;
+    animation: fadeUp 0.3s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Verify screen */
+  .verify-section {
+    padding: 32px 0 0;
+  }
+  .verify-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+    margin-bottom: 6px;
+  }
+  .verify-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+  .verify-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* Creator card (after verify) */
+  .creator-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .creator-card.show { display: block; animation: fadeUp 0.3s ease; }
+  .creator-card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .creator-avatar {
+    width: 44px; height: 44px;
+    background: var(--accent-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .creator-name { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .creator-ig { font-size: 13px; color: var(--ink-ghost); }
+  .creator-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-item {
+    background: var(--paper-warm);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .stat-val { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .stat-key { font-size: 11px; color: var(--ink-ghost); margin-top: 2px; }
+
+  /* Status banners */
+  .banner {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+  .banner.show { display: block; }
+  .banner strong { display: block; font-weight: 500; margin-bottom: 2px; }
+  .banner.error { background: var(--error-soft); color: var(--error); border: 1.5px solid #f0b4b4; }
+  .banner.warning { background: var(--warning-soft); color: var(--warning); border: 1.5px solid #e8d090; }
+  .banner.info { background: var(--accent-soft); color: var(--accent); border: 1.5px solid #90d4b4; }
+
+  /* Fields */
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .field label .req { color: var(--accent); margin-left: 2px; }
+  .field label .opt { color: var(--ink-ghost); font-weight:300; font-size:11px; text-transform:none; letter-spacing:0; margin-left:4px; }
+
+  input[type="text"], input[type="date"], select, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  input.error { border-color: var(--error); box-shadow: 0 0 0 3px var(--error-soft); }
+  textarea { resize: none; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8a49e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+  }
+
+  .field-error { font-size: 12px; color: var(--error); margin-top: 6px; display: none; }
+  .field-error.show { display: block; }
+  .char-count { font-size: 12px; color: var(--ink-ghost); margin-top: 6px; text-align: right; }
+
+  /* Section divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 20px;
+    color: var(--ink-ghost);
+    font-size: 12px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Campaign brief card */
+  .brief-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 24px;
+  }
+  .brief-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  .brief-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .brief-row:last-child { border-bottom: none; }
+  .brief-key { color: var(--ink-ghost); flex: 0 0 90px; font-size: 12px; }
+  .brief-val { color: var(--ink); font-weight: 400; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    width: 100%;
+    padding: 15px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-primary:hover { background: var(--accent-mid); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary.loading { pointer-events: none; opacity: 0.7; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 14px 24px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .btn-secondary:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .btn-primary.loading .spinner { display: block; }
+  .btn-primary.loading .btn-label { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Waitlist position */
+  .waitlist-badge {
+    background: var(--paper-warm);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .waitlist-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .waitlist-info { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .waitlist-info strong { color: var(--ink); display: block; font-size: 14px; }
+
+  /* Success */
+  .success-wrap {
+    text-align: center;
+    padding: 48px 0;
+  }
+  .success-circle {
+    width: 64px; height: 64px;
+    background: var(--accent-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+  }
+  .success-circle svg { width: 28px; height: 28px; stroke: var(--accent); }
+  .success-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--ink);
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .success-sub { font-size: 13px; color: var(--ink-soft); line-height: 1.8; }
+
+  @media (max-width: 380px) {
+    .header h1 { font-size: 22px; }
+    .creator-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-label">Campaign Apply Form</div>
+  <h1>Apply ke<br><em>Campaign Brand</em></h1>
+  <div class="campaign-badge">
+    <div class="campaign-badge-dot"></div>
+    <span id="campaignNameHeader">Memuat campaign...</span>
+  </div>
+</div>
+
+<!-- Slot bar -->
+<div class="slot-bar-wrap">
+  <div class="slot-bar-label">
+    <span>Slot tersedia</span>
+    <strong><span id="slotsRemaining">—</span> dari <span id="slotsTotal">—</span> slot</strong>
+  </div>
+  <div class="slot-track"><div class="slot-fill" id="slotFill" style="width:0%"></div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- Screen 1: Verify identity -->
+  <div class="screen active" id="screenVerify">
+    <div class="verify-section">
+      <div class="verify-label">Langkah 1</div>
+      <div class="verify-title">Verifikasi identitas</div>
+      <div class="verify-sub">Masukkan username IG kamu yang terdaftar sebagai Creator ID.</div>
+
+      <div class="field">
+        <label>Username Instagram <span class="req">*</span></label>
+        <input type="text" id="verifyIG" placeholder="usernamekamu" autocorrect="off" autocapitalize="none">
+        <div class="field-error show" id="err-verify" style="display:none">Username tidak ditemukan di database creator kami.</div>
+      </div>
+
+      <div class="creator-card" id="creatorCard">
+        <div class="creator-card-top">
+          <div class="creator-avatar" id="creatorInitial">R</div>
+          <div>
+            <div class="creator-name" id="creatorName">Nama Creator</div>
+            <div class="creator-ig" id="creatorIG">@username</div>
+          </div>
+        </div>
+        <div class="creator-stats">
+          <div class="stat-item">
+            <div class="stat-val" id="creatorFollowers">—</div>
+            <div class="stat-key">Followers IG</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val" id="creatorNiche">—</div>
+            <div class="stat-key">Niche</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val" id="creatorScore">—</div>
+            <div class="stat-key">Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eligibility banners -->
+      <div class="banner error" id="bannerInactive">
+        <strong>Akun belum aktif</strong>
+        Akun kamu masih dalam proses review admin. Tunggu konfirmasi via WA sebelum apply campaign.
+      </div>
+      <div class="banner error" id="bannerBlacklist">
+        <strong>Akun tidak dapat digunakan</strong>
+        Hubungi admin via WA community untuk informasi lebih lanjut.
+      </div>
+      <div class="banner warning" id="bannerActiveCampaign">
+        <strong>Sedang dalam campaign aktif</strong>
+        Kamu tidak bisa apply campaign baru sebelum menyelesaikan campaign yang sedang berjalan.
+        Nama campaign aktif: <strong id="activeCampaignName">—</strong>
+      </div>
+      <div class="banner warning" id="bannerAlreadyApplied">
+        <strong>Sudah apply campaign ini</strong>
+        Kamu sudah ada di waiting list campaign ini. Tim admin akan segera review.
+      </div>
+      <div class="banner info" id="bannerSlotFull">
+        <strong>Slot penuh</strong>
+        Semua slot untuk campaign ini sudah terisi. Pantau WA community untuk campaign berikutnya.
+      </div>
+
+      <button class="btn-primary" id="btnVerify" onclick="verifyCreator()">
+        <span class="btn-label">Verifikasi</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Apply form -->
+  <div class="screen" id="screenApply">
+
+    <!-- Campaign brief -->
+    <div style="padding-top:28px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-ghost);margin-bottom:6px;">Brief campaign</div>
+      <div class="brief-card">
+        <div class="brief-title" id="briefCampaignName">—</div>
+        <div class="brief-row">
+          <span class="brief-key">Brand</span>
+          <span class="brief-val" id="briefBrand">—</span>
+        </div>
+        <div class="brief-row">
+          <span class="brief-key">Platform</span>
+          <span class="brief-val" id="briefPlatform">—</span>
+        </div>
+        <div class="brief-row">
+          <span class="brief-key">Deliverable</span>
+          <span class="brief-val" id="briefDeliverable">—</span>
+        </div>
+        <div class="brief-row">
+          <span class="brief-key">Deadline post</span>
+          <span class="brief-val" id="briefDeadline">—</span>
+        </div>
+        <div class="brief-row">
+          <span class="brief-key">Objective</span>
+          <span class="brief-val"><span class="tag" id="briefObjective">—</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apply questions -->
+    <div class="field">
+      <label>Kenapa kamu cocok untuk campaign ini? <span class="req">*</span></label>
+      <textarea id="applyReason" rows="4" maxlength="300" placeholder="Ceritakan singkat kenapa kontenmu relevan dengan brand ini..."></textarea>
+      <div class="char-count"><span id="reasonCount">0</span> / 300</div>
+      <div class="field-error" id="err-reason">Wajib diisi, minimal 30 karakter</div>
+    </div>
+
+    <div class="field">
+      <label>Link konten referensi terbaik <span class="req">*</span></label>
+      <input type="text" id="applyRef" placeholder="https://instagram.com/p/...">
+      <div class="field-error" id="err-ref">Wajib diisi</div>
+    </div>
+
+    <div class="field">
+      <label>Kapan kamu bisa mulai produksi? <span class="req">*</span></label>
+      <input type="date" id="applyStartDate">
+      <div class="field-error" id="err-startDate">Pilih tanggal</div>
+    </div>
+
+    <div class="field">
+      <label>Ada pertanyaan tentang brief? <span class="opt">(opsional)</span></label>
+      <textarea id="applyQuestion" rows="3" maxlength="200" placeholder="Tanyakan hal-hal yang perlu diperjelas..."></textarea>
+    </div>
+
+    <button class="btn-primary" id="btnApply" onclick="submitApply()">
+      <span class="btn-label">Kirim apply — masuk waiting list</span>
+      <div class="spinner"></div>
+    </button>
+    <button class="btn-secondary" onclick="resetToVerify()">Batal</button>
+  </div>
+
+  <!-- Screen 3: Success -->
+  <div class="screen" id="screenSuccess">
+    <div class="success-wrap">
+      <div class="success-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <div class="success-title">Apply berhasil!</div>
+
+      <div class="waitlist-badge">
+        <div class="waitlist-num" id="waitlistPos">#3</div>
+        <div class="waitlist-info">
+          <strong>Posisi kamu di waiting list</strong>
+          Admin akan review semua aplikasi dan konfirmasi via WA dalam 1–2 hari kerja.
+        </div>
+      </div>
+
+      <div class="success-sub">
+        Posisi waiting list <em>bukan</em> jaminan dapat slot — admin memilih creator yang paling cocok dari list ini.<br><br>
+        Pantau WA community untuk update status campaign.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyv6GMG2zgOUrEu4zx1l7J0ifyAt5QA0vBPCHvSif0XLjkh_OpYIaZG4WzwC4--idYH/exec';
+  const DEMO_MODE = true;
+
+  // Campaign ID bisa di-pass via URL param: ?campaignId=CAM-2024-001
+  const urlParams = new URLSearchParams(window.location.search);
+  const CAMPAIGN_ID = urlParams.get('campaignId') || 'CAM-2024-001';
+
+  // ─── DEMO DATA ────────────────────────────────────────────
+  const DEMO_CAMPAIGN = {
+    id: 'CAM-2024-001',
+    name: 'Kampanye F&B Brand X',
+    brand: 'Brand X Indonesia',
+    platform: 'Instagram + TikTok',
+    deliverable: '1 Reel IG + 3 Story + 1 TikTok video',
+    deadline: '15 Feb 2025',
+    objective: 'Brand Awareness',
+    slotsTotal: 8,
+    slotsFilled: 5,
+  };
+
+  const DEMO_CREATORS = {
+    'rizkyandini': { name: 'Rizky Andini', ig: '@rizkyandini', followers: '45.2K', niche: 'F&B', score: '82', status: 'active', activeCampaign: null },
+    'testuser': { name: 'Test User', ig: '@testuser', followers: '12K', niche: 'Lifestyle', score: '71', status: 'active', activeCampaign: 'Campaign Sebelumnya' },
+    'inactiveuser': { name: 'Inactive User', ig: '@inactiveuser', followers: '8K', niche: 'Beauty', score: '—', status: 'inactive', activeCampaign: null },
+  };
+
+  let currentCreator = null;
+
+  // ─── INIT ─────────────────────────────────────────────────
+  function initCampaign() {
+    if (DEMO_MODE) {
+      populateCampaign(DEMO_CAMPAIGN);
+      return;
+    }
+    fetch(`${GAS_URL}?action=getCampaign&campaignId=${CAMPAIGN_ID}`)
+      .then(r => r.json())
+      .then(d => populateCampaign(d))
+      .catch(() => {});
+  }
+
+  function populateCampaign(c) {
+    document.getElementById('campaignNameHeader').textContent = c.name;
+    document.getElementById('briefCampaignName').textContent = c.name;
+    document.getElementById('briefBrand').textContent = c.brand;
+    document.getElementById('briefPlatform').textContent = c.platform;
+    document.getElementById('briefDeliverable').textContent = c.deliverable;
+    document.getElementById('briefDeadline').textContent = c.deadline;
+    document.getElementById('briefObjective').textContent = c.objective;
+
+    const remaining = c.slotsTotal - c.slotsFilled;
+    document.getElementById('slotsRemaining').textContent = remaining;
+    document.getElementById('slotsTotal').textContent = c.slotsTotal;
+    const pct = (c.slotsFilled / c.slotsTotal) * 100;
+    document.getElementById('slotFill').style.width = pct + '%';
+  }
+
+  // ─── VERIFY ───────────────────────────────────────────────
+  async function verifyCreator() {
+    const ig = document.getElementById('verifyIG').value.trim().toLowerCase().replace('@', '');
+    if (!ig) {
+      document.getElementById('err-verify').style.display = 'block';
+      document.getElementById('verifyIG').classList.add('error');
+      return;
+    }
+
+    const btn = document.getElementById('btnVerify');
+    btn.classList.add('loading');
+    hideAllBanners();
+
+    let creator;
+    if (DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 800));
+      creator = DEMO_CREATORS[ig] || null;
+    } else {
+      try {
+        const res = await fetch(`${GAS_URL}?action=getCreator&ig=${ig}&campaignId=${CAMPAIGN_ID}`);
+        creator = await res.json();
+      } catch(e) { creator = null; }
+    }
+
+    btn.classList.remove('loading');
+
+    if (!creator) {
+      document.getElementById('err-verify').style.display = 'block';
+      document.getElementById('verifyIG').classList.add('error');
+      document.getElementById('creatorCard').classList.remove('show');
+      return;
+    }
+
+    document.getElementById('err-verify').style.display = 'none';
+    document.getElementById('verifyIG').classList.remove('error');
+
+    // Show creator card
+    currentCreator = creator;
+    document.getElementById('creatorInitial').textContent = creator.name.charAt(0).toUpperCase();
+    document.getElementById('creatorName').textContent = creator.name;
+    document.getElementById('creatorIG').textContent = creator.ig;
+    document.getElementById('creatorFollowers').textContent = creator.followers;
+    document.getElementById('creatorNiche').textContent = creator.niche;
+    document.getElementById('creatorScore').textContent = creator.score;
+    document.getElementById('creatorCard').classList.add('show');
+
+    // Eligibility checks
+    if (creator.status === 'blacklist') {
+      document.getElementById('bannerBlacklist').classList.add('show');
+      return;
+    }
+    if (creator.status === 'inactive') {
+      document.getElementById('bannerInactive').classList.add('show');
+      return;
+    }
+    if (creator.activeCampaign) {
+      document.getElementById('activeCampaignName').textContent = creator.activeCampaign;
+      document.getElementById('bannerActiveCampaign').classList.add('show');
+      return;
+    }
+
+    // All clear — go to apply form
+    setTimeout(() => showScreen('screenApply'), 400);
+  }
+
+  function hideAllBanners() {
+    document.querySelectorAll('.banner').forEach(b => b.classList.remove('show'));
+  }
+
+  // ─── APPLY ────────────────────────────────────────────────
+  document.getElementById('applyReason').addEventListener('input', function() {
+    document.getElementById('reasonCount').textContent = this.value.length;
+  });
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('applyStartDate').setAttribute('min', today);
+
+  async function submitApply() {
+    const reason = document.getElementById('applyReason').value.trim();
+    const ref = document.getElementById('applyRef').value.trim();
+    const startDate = document.getElementById('applyStartDate').value;
+    let ok = true;
+
+    if (reason.length < 30) {
+      document.getElementById('err-reason').classList.add('show');
+      document.getElementById('applyReason').classList.add('error');
+      ok = false;
+    } else {
+      document.getElementById('err-reason').classList.remove('show');
+      document.getElementById('applyReason').classList.remove('error');
+    }
+
+    if (!ref) {
+      document.getElementById('err-ref').classList.add('show');
+      document.getElementById('applyRef').classList.add('error');
+      ok = false;
+    } else {
+      document.getElementById('err-ref').classList.remove('show');
+      document.getElementById('applyRef').classList.remove('error');
+    }
+
+    if (!startDate) {
+      document.getElementById('err-startDate').classList.add('show');
+      document.getElementById('applyStartDate').classList.add('error');
+      ok = false;
+    } else {
+      document.getElementById('err-startDate').classList.remove('show');
+      document.getElementById('applyStartDate').classList.remove('error');
+    }
+
+    if (!ok) return;
+
+    const btn = document.getElementById('btnApply');
+    btn.classList.add('loading');
+
+    const payload = {
+      action: 'applyToCampaign',
+      campaignId: CAMPAIGN_ID,
+      creatorIG: currentCreator.ig,
+      reason,
+      referenceUrl: ref,
+      availableFrom: startDate,
+      question: document.getElementById('applyQuestion').value.trim(),
+      appliedAt: new Date().toISOString(),
+    };
+
+    if (DEMO_MODE) {
+      await new Promise(r => setTimeout(r, 1000));
+      document.getElementById('waitlistPos').textContent = '#' + Math.floor(Math.random() * 8 + 1);
+      showScreen('screenSuccess');
+      return;
+    }
+
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const data = await res.json();
+      btn.classList.remove('loading');
+      if (data.success) {
+        document.getElementById('waitlistPos').textContent = '#' + data.waitlistPosition;
+        showScreen('screenSuccess');
+      } else {
+        alert(data.message || 'Terjadi kesalahan. Coba lagi.');
+      }
+    } catch(e) {
+      btn.classList.remove('loading');
+      alert('Gagal mengirim. Cek koneksi dan coba lagi.');
+    }
+  }
+
+  // ─── UTILS ────────────────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetToVerify() {
+    document.getElementById('verifyIG').value = '';
+    document.getElementById('creatorCard').classList.remove('show');
+    hideAllBanners();
+    currentCreator = null;
+    showScreen('screenVerify');
+  }
+
+  // Enter key on verify field
+  document.getElementById('verifyIG').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') verifyCreator();
+  });
+
+  // ─── BOOT ─────────────────────────────────────────────────
+  initCampaign();
+</script>
+</body>
+</html>

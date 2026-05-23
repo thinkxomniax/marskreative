@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOL Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f0e0c;--ink-s:#5a5852;--ink-g:#a8a49e;
+  --paper:#f6f4f0;--surface:#fff;--surface2:#faf8f4;
+  --accent:#1a6b4a;--accent-s:#d4ede0;--accent-m:#2a7a4b;
+  --amber:#7a5a1a;--amber-s:#f5e8c8;
+  --red:#b02a2a;--red-s:#f0d4d4;
+  --blue:#1a4a7a;--blue-s:#d4e4f0;
+  --border:#e2ddd6;--radius:10px;
+  --font-d:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;
+  --sidebar:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-b);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5;display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);background:var(--ink);flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-logo-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:4px;}
+.sidebar-logo-name{font-family:var(--font-d);font-size:18px;color:#fff;font-weight:400;}
+.sidebar-logo-name em{color:rgba(255,255,255,0.5);font-style:italic;}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;}
+.nav-section{padding:12px 16px 6px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+.nav-item.active{color:#fff;background:rgba(255,255,255,0.08);border-left-color:#7fe8b2;}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:999px;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--font-d);font-size:20px;font-weight:400;}
+.topbar-actions{display:flex;gap:10px;align-items:center;}
+.content{padding:24px 28px;flex:1;}
+
+/* ── CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:default;}
+.stat-card-val{font-family:var(--font-d);font-size:32px;font-weight:400;line-height:1;margin-bottom:4px;}
+.stat-card-label{font-size:12px;color:var(--ink-g);text-transform:uppercase;letter-spacing:0.06em;}
+.stat-card-sub{font-size:11px;margin-top:6px;}
+.stat-card.c-green .stat-card-val{color:var(--accent);}
+.stat-card.c-amber .stat-card-val{color:var(--amber);}
+.stat-card.c-red .stat-card-val{color:var(--red);}
+.stat-card.c-blue .stat-card-val{color:var(--blue);}
+
+/* ── SECTION ── */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;}
+.section-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.section-title{font-weight:500;font-size:14px;}
+.section-sub{font-size:12px;color:var(--ink-g);margin-top:1px;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-g);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+.td-name{font-weight:500;}
+.td-ig{color:var(--ink-g);font-size:12px;}
+.td-score{font-weight:600;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:500;white-space:nowrap;}
+.badge-green{background:var(--accent-s);color:var(--accent-m);}
+.badge-amber{background:var(--amber-s);color:var(--amber);}
+.badge-red{background:var(--red-s);color:var(--red);}
+.badge-blue{background:var(--blue-s);color:var(--blue);}
+.badge-gray{background:#ede9e2;color:var(--ink-g);}
+
+/* ── SCORE BAR ── */
+.score-bar{display:flex;align-items:center;gap:8px;}
+.score-track{flex:1;height:5px;background:var(--border);border-radius:999px;overflow:hidden;max-width:80px;}
+.score-fill{height:100%;border-radius:999px;transition:width 0.4s;}
+.score-fill.hi{background:var(--accent);}
+.score-fill.mid{background:var(--amber);}
+.score-fill.lo{background:var(--red);}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-family:var(--font-b);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-m);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--ink-s);}
+.btn-ghost:hover{border-color:var(--ink-g);color:var(--ink);}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.btn-approve{background:var(--accent-s);color:var(--accent-m);}
+.btn-approve:hover{background:#c0e8d4;}
+.btn-reject{background:var(--red-s);color:var(--red);}
+.btn-reject:hover{background:#e8c0c0;}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── FILTERS ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.filter-input{padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-b);font-size:13px;background:var(--surface);color:var(--ink);outline:none;}
+.filter-input:focus{border-color:var(--accent);}
+select.filter-input{cursor:pointer;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,14,12,0.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:slideUp 0.25s ease;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--font-d);font-size:20px;font-weight:400;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--ink-g);font-size:20px;line-height:1;padding:4px;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── CREATOR PROFILE ── */
+.creator-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.meta-item{background:var(--surface2);border-radius:8px;padding:12px;}
+.meta-label{font-size:11px;color:var(--ink-g);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;}
+.meta-value{font-size:14px;font-weight:500;}
+.history-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.history-row:last-child{border-bottom:none;}
+
+/* ── CAMPAIGN CARD ── */
+.camp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:20px;}
+.camp-card{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.camp-card-head{padding:14px 16px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.camp-card-brand{font-size:11px;color:var(--ink-g);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;}
+.camp-card-name{font-weight:500;font-size:14px;}
+.camp-card-body{padding:14px 16px;}
+.camp-detail-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:var(--ink-s);}
+.slot-mini{margin-top:10px;}
+.slot-mini-track{height:4px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:4px;}
+.slot-mini-fill{height:100%;border-radius:999px;background:var(--accent);}
+.camp-card-foot{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;}
+
+/* ── SHARE MODAL ── */
+.share-link-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:13px;font-family:monospace;word-break:break-all;color:var(--ink-s);margin-bottom:12px;}
+.share-steps{counter-reset:step;}
+.share-step{counter-increment:step;display:flex;gap:12px;margin-bottom:12px;font-size:13px;}
+.share-step::before{content:counter(step);width:22px;height:22px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px;}
+.share-step-text{color:var(--ink-s);line-height:1.5;}
+.share-step-text strong{color:var(--ink);}
+
+/* ── PAGE ── */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;padding:16px 20px 0;border-bottom:1px solid var(--border);}
+.tab{padding:8px 16px;font-size:13px;cursor:pointer;border-radius:8px 8px 0 0;color:var(--ink-g);border:1px solid transparent;border-bottom:none;position:relative;top:1px;}
+.tab.active{background:var(--surface);border-color:var(--border);color:var(--ink);font-weight:500;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink-g);}
+.empty-state svg{width:40px;height:40px;stroke:var(--border);margin-bottom:12px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;z-index:500;transform:translateY(80px);opacity:0;transition:all 0.3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:var(--accent-m);}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-label">Admin Panel</div>
+    <div class="sidebar-logo-name">KOL <em>OS</em></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-section">Creator</div>
+    <div class="nav-item" onclick="showPage('creators')">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      KOL Database
+    </div>
+    <div class="nav-section">Campaign</div>
+    <div class="nav-item" onclick="showPage('campaigns')" id="nav-campaigns">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      Campaigns
+    </div>
+    <div class="nav-item" onclick="showPage('waitinglist')" id="nav-wl">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Waiting List
+      <span class="nav-badge" id="wl-badge">0</span>
+    </div>
+  </nav>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="openModal('createCampaignModal')">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Campaign baru
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE: DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <div class="section-title">Campaign aktif</div>
+              <div class="section-sub">Status terkini</div>
+            </div>
+          </div>
+          <div id="dashCampaigns"></div>
+        </div>
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <div class="section-title">Approval menunggu</div>
+              <div class="section-sub">Waiting list semua campaign</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="showPage('waitinglist')">Lihat semua</button>
+          </div>
+          <div id="dashWaiting"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: CREATORS -->
+    <div class="page" id="page-creators">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">KOL Database</div>
+            <div class="section-sub" id="creatorCount"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="recalcScores()">↻ Recalc score</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <input class="filter-input" placeholder="Cari nama / username..." oninput="filterCreators()" id="srchCreator" style="min-width:200px;">
+          <select class="filter-input" onchange="filterCreators()" id="fltNiche">
+            <option value="">Semua niche</option>
+            <option>F&B</option><option>Lifestyle</option><option>Beauty</option>
+            <option>Fashion</option><option>Travel</option><option>Parenting</option>
+          </select>
+          <select class="filter-input" onchange="filterCreators()" id="fltStatus">
+            <option value="">Semua status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="blacklist">Blacklist</option>
+          </select>
+          <select class="filter-input" onchange="filterCreators()" id="fltDomisili">
+            <option value="">Semua kota</option>
+            <option>Batam</option><option>Jakarta Selatan</option><option>Jakarta Pusat</option>
+            <option>Jakarta Timur</option><option>Surabaya</option><option>Bandung</option>
+            <option>Bali</option><option>Medan</option><option>Depok</option><option>Bekasi</option><option>Tangerang</option>
+          </select>
+          <select class="filter-input" onchange="filterCreators()" id="fltFollowers">
+            <option value="">Semua tier</option>
+            <option value="10000">10K+</option>
+            <option value="30000">30K+</option>
+            <option value="50000">50K+</option>
+            <option value="100000">100K+</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Creator</th><th>Followers</th><th>Niche</th>
+              <th>Domisili</th><th>Score</th><th>Status</th><th>Aksi</th>
+            </tr></thead>
+            <tbody id="creatorTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: CAMPAIGNS -->
+    <div class="page" id="page-campaigns">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Semua Campaign</div>
+          <div style="display:flex;gap:8px;">
+            <select class="filter-input" onchange="renderCampaigns(this.value)" id="fltCampStatus" style="font-size:12px;">
+              <option value="">Semua status</option>
+              <option value="open">Open</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="camp-grid" id="campGrid"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: WAITING LIST -->
+    <div class="page" id="page-waitinglist">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Waiting List — Pick KOL</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="filter-input" onchange="renderWaitingList(this.value)" id="wlCampaignSelect" style="min-width:200px;">
+              <option value="">Pilih campaign</option>
+            </select>
+          </div>
+        </div>
+        <div id="wlContent">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <div>Pilih campaign untuk lihat waiting list</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: Creator Profile -->
+<div class="modal-overlay" id="creatorModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalCreatorTitle">Creator Profile</div>
+      <button class="modal-close" onclick="closeModal('creatorModal')">&times;</button>
+    </div>
+    <div class="modal-body" id="modalCreatorBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('creatorModal')">Tutup</button>
+      <button class="btn btn-approve" id="modalApproveBtn">Aktifkan</button>
+      <button class="btn btn-reject" id="modalBlacklistBtn">Blacklist</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Share Campaign -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Share Campaign ke WA</div>
+      <button class="modal-close" onclick="closeModal('shareModal')">&times;</button>
+    </div>
+    <div class="modal-body" id="shareModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('shareModal')">Tutup</button>
+      <button class="btn btn-primary" onclick="copyShareLink()">Copy link apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Create Campaign -->
+<div class="modal-overlay" id="createCampaignModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Buat Campaign Baru</div>
+      <button class="modal-close" onclick="closeModal('createCampaignModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;gap:14px;">
+        <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Nama Brand</label><input class="filter-input" id="nc-brand" placeholder="Brand X" style="width:100%;"></div>
+        <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Nama Campaign</label><input class="filter-input" id="nc-name" placeholder="Campaign Ramadan 2024" style="width:100%;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Platform</label>
+          <select class="filter-input" id="nc-platform" style="width:100%;"><option>Instagram</option><option>TikTok</option><option>Instagram + TikTok</option></select></div>
+          <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Slot Creator</label><input class="filter-input" id="nc-slots" type="number" placeholder="5" style="width:100%;"></div>
+        </div>
+        <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Deliverables</label><input class="filter-input" id="nc-deliverables" placeholder="1 Reel + 3 Story" style="width:100%;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Deadline Posting</label><input class="filter-input" id="nc-deadline" type="date" style="width:100%;"></div>
+          <div><label style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);display:block;margin-bottom:5px;">Niche Target</label><input class="filter-input" id="nc-niche" placeholder="F&B" style="width:100%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('createCampaignModal')">Batal</button>
+      <button class="btn btn-primary" onclick="createCampaignDemo()">Buat Campaign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const DB={"creators":[{"creator_id":"rizkyandini","created_at":"2025-12-18 08:55","updated_at":"2026-05-23 08:55","full_name":"Rizky Andini","ig_username":"rizkyandini","tiktok_username":"rizkyandini_tt","platform_primary":"instagram","followers_ig":"45200","followers_tiktok":"80000","niche":"F&B, Lifestyle","domisili":"Jakarta Selatan","audience_demographics":"18-24 (60%), 25-34 (30%)","audience_gender":"Female 75%","style_category":"Aesthetic, Review","posting_frequency":"4-5x seminggu","endorse_experience":"2 tahun - Brand X, Brand Y","availability_days":"Senin-Jumat","contact_wa":"0812xxxxxxx","contact_email":"rizky@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"82","notes_internal":"Top performer F&B","source":"self-apply"},{"creator_id":"dinafoodies","created_at":"2026-02-05 08:55","updated_at":"2026-05-23 08:55","full_name":"Dina Rahmawati","ig_username":"dinafoodies","tiktok_username":"dinafoodies_tiktok","platform_primary":"both","followers_ig":"28400","followers_tiktok":"42000","niche":"F&B","domisili":"Batam","audience_demographics":"18-24 (55%), 25-34 (35%)","audience_gender":"Female 80%","style_category":"Candid, Review","posting_frequency":"6-7x seminggu","endorse_experience":"1 tahun - 3 brand F&B","availability_days":"Semua hari","contact_wa":"0813xxxxxxx","contact_email":"dina@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"74","notes_internal":"Aktif dan responsif","source":"self-apply"},{"creator_id":"lifestylebyluki","created_at":"2026-04-22 08:55","updated_at":"2026-05-23 08:55","full_name":"Luki Prasetyo","ig_username":"lifestylebyluki","tiktok_username":"","platform_primary":"instagram","followers_ig":"61000","followers_tiktok":"0","niche":"Lifestyle, Travel","domisili":"Jakarta Pusat","audience_demographics":"25-34 (65%), 18-24 (25%)","audience_gender":"Male 55%","style_category":"Aesthetic, Vlog","posting_frequency":"3-4x seminggu","endorse_experience":"3 tahun - berbagai brand","availability_days":"Fleksibel","contact_wa":"0814xxxxxxx","contact_email":"luki@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"88","notes_internal":"High score, konsisten","source":"referral"},{"creator_id":"beautybyara","created_at":"2025-11-09 08:55","updated_at":"2026-05-23 08:55","full_name":"Ara Kusumawati","ig_username":"beautybyara","tiktok_username":"beautybyara","platform_primary":"both","followers_ig":"93000","followers_tiktok":"155000","niche":"Beauty, Lifestyle","domisili":"Surabaya","audience_demographics":"18-24 (70%)","audience_gender":"Female 90%","style_category":"Tutorial, GRWM","posting_frequency":"5-6x seminggu","endorse_experience":"4 tahun - Beauty brand besar","availability_days":"Senin-Sabtu","contact_wa":"0815xxxxxxx","contact_email":"ara@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"91","notes_internal":"Top tier creator","source":"referral"},{"creator_id":"makandijakarta","created_at":"2026-03-16 08:55","updated_at":"2026-05-23 08:55","full_name":"Budi Santoso","ig_username":"makandijakarta","tiktok_username":"makandijakarta","platform_primary":"both","followers_ig":"38700","followers_tiktok":"65000","niche":"F&B","domisili":"Jakarta Timur","audience_demographics":"25-34 (70%), 35-44 (20%)","audience_gender":"Male 60%","style_category":"Review, Talking head","posting_frequency":"5x seminggu","endorse_experience":"2 tahun - F&B lokal","availability_days":"Semua hari","contact_wa":"0816xxxxxxx","contact_email":"budi@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"77","notes_internal":"Fokus F&B Jakarta","source":"self-apply"},{"creator_id":"sarilifestyle","created_at":"2025-09-09 08:55","updated_at":"2026-05-23 08:55","full_name":"Sari Dewi","ig_username":"sarilifestyle","tiktok_username":"sarilifestyle_tt","platform_primary":"instagram","followers_ig":"22100","followers_tiktok":"0","niche":"Lifestyle, Parenting","domisili":"Bandung","audience_demographics":"25-34 (60%), 35-44 (30%)","audience_gender":"Female 85%","style_category":"Candid, Vlog","posting_frequency":"3x seminggu","endorse_experience":"1 tahun","availability_days":"Selasa-Kamis","contact_wa":"0817xxxxxxx","contact_email":"sari@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"65","notes_internal":"Niche parenting","source":"self-apply"},{"creator_id":"travelbyreza","created_at":"2025-07-25 08:55","updated_at":"2026-05-23 08:55","full_name":"Reza Firmansyah","ig_username":"travelbyreza","tiktok_username":"","platform_primary":"instagram","followers_ig":"47500","followers_tiktok":"0","niche":"Travel, Lifestyle","domisili":"Bali","audience_demographics":"25-34 (55%), 18-24 (35%)","audience_gender":"Male 65%","style_category":"Vlog, Aesthetic","posting_frequency":"2-3x seminggu","endorse_experience":"2 tahun - travel brand","availability_days":"Fleksibel","contact_wa":"0818xxxxxxx","contact_email":"reza@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"79","notes_internal":"Travel focused","source":"referral"},{"creator_id":"fitnessbynanda","created_at":"2026-04-23 08:55","updated_at":"2026-05-23 08:55","full_name":"Nanda Oktavia","ig_username":"fitnessbynanda","tiktok_username":"fitnessbynanda","platform_primary":"both","followers_ig":"35600","followers_tiktok":"88000","niche":"Lifestyle","domisili":"Depok","audience_demographics":"18-24 (75%)","audience_gender":"Female 70%","style_category":"Tutorial, Talking head","posting_frequency":"6x seminggu","endorse_experience":"1 tahun","availability_days":"Semua hari","contact_wa":"0819xxxxxxx","contact_email":"nanda@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"71","notes_internal":"Konsisten banget","source":"self-apply"},{"creator_id":"kulinerbatam","created_at":"2025-07-30 08:55","updated_at":"2026-05-23 08:55","full_name":"Hendra Wijaya","ig_username":"kulinerbatam","tiktok_username":"kulinerbatamtt","platform_primary":"both","followers_ig":"19800","followers_tiktok":"34000","niche":"F&B","domisili":"Batam","audience_demographics":"25-34 (65%)","audience_gender":"Male 55%","style_category":"Review, Candid","posting_frequency":"4x seminggu","endorse_experience":"6 bulan","availability_days":"Semua hari","contact_wa":"0820xxxxxxx","contact_email":"hendra@email.com","portfolio_url":"https://ig.com/p/xxx","status":"inactive","blacklist_reason":"","score_total":"58","notes_internal":"Baru 6 bulan endorse","source":"self-apply"},{"creator_id":"stylekuindah","created_at":"2026-04-15 08:55","updated_at":"2026-05-23 08:55","full_name":"Indah Permata","ig_username":"stylekuindah","tiktok_username":"","platform_primary":"instagram","followers_ig":"12400","followers_tiktok":"0","niche":"Fashion, Beauty","domisili":"Bekasi","audience_demographics":"18-24 (80%)","audience_gender":"Female 92%","style_category":"Aesthetic, GRWM","posting_frequency":"4x seminggu","endorse_experience":"Baru mulai","availability_days":"Fleksibel","contact_wa":"0821xxxxxxx","contact_email":"indah@email.com","portfolio_url":"https://ig.com/p/xxx","status":"inactive","blacklist_reason":"","score_total":"0","notes_internal":"Baru daftar, belum ada data","source":"self-apply"},{"creator_id":"foodiemedan","created_at":"2025-06-07 08:55","updated_at":"2026-05-23 08:55","full_name":"Toni Harahap","ig_username":"foodiemedan","tiktok_username":"foodiemedan_tt","platform_primary":"both","followers_ig":"55200","followers_tiktok":"71000","niche":"F&B","domisili":"Medan","audience_demographics":"18-24 (50%), 25-34 (40%)","audience_gender":"Male 58%","style_category":"Review, Vlog","posting_frequency":"5x seminggu","endorse_experience":"3 tahun - brand nasional","availability_days":"Senin-Sabtu","contact_wa":"0822xxxxxxx","contact_email":"toni@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"85","notes_internal":"Strong Medan market","source":"referral"},{"creator_id":"mamablogger","created_at":"2026-03-03 08:55","updated_at":"2026-05-23 08:55","full_name":"Putri Rahayu","ig_username":"mamablogger","tiktok_username":"","platform_primary":"instagram","followers_ig":"31000","followers_tiktok":"0","niche":"Parenting, Lifestyle","domisili":"Tangerang","audience_demographics":"25-34 (55%), 35-44 (40%)","audience_gender":"Female 88%","style_category":"Vlog, Candid","posting_frequency":"2x seminggu","endorse_experience":"2 tahun","availability_days":"Pagi hari saja","contact_wa":"0823xxxxxxx","contact_email":"putri@email.com","portfolio_url":"https://ig.com/p/xxx","status":"active","blacklist_reason":"","score_total":"67","notes_internal":"Niche parenting","source":"self-apply"},{"creator_id":"blacklisttest","created_at":"2025-05-27 08:55","updated_at":"2026-05-23 08:55","full_name":"Fraud User","ig_username":"blacklisttest","tiktok_username":"","platform_primary":"instagram","followers_ig":"5000","followers_tiktok":"0","niche":"Lifestyle","domisili":"Jakarta","audience_demographics":"","audience_gender":"","style_category":"Candid","posting_frequency":"","endorse_experience":"","availability_days":"","contact_wa":"0824xxxxxxx","contact_email":"","portfolio_url":"","status":"blacklist","blacklist_reason":"Konten tidak sesuai brief, revisi diabaikan 3x","score_total":"0","notes_internal":"","source":"self-apply"}],"campaigns":[{"campaign_id":"CAM-24-001","brand_name":"Kopi Kenangan","campaign_name":"Kampanye Kopi Kenangan Q1","objective":"Brand Awareness","platform":"Instagram","deliverables":"1 Reel IG + 3 Story","budget_total":"15000000","slots_total":"5","deadline_content":"2024-02-10","deadline_posting":"2024-02-15","status":"completed","pic_admin":"Admin A","brief_url":"https://drive.google.com/xxx","notes":"Campaign pertama Q1","created_at":"2026-05-10","updated_at":"2026-05-23","apply_deadline":"2024-02-05","min_followers":"20000","target_niche":"F&B"},{"campaign_id":"CAM-24-002","brand_name":"Fore Coffee","campaign_name":"Fore x Creator Feb","objective":"Traffic","platform":"Instagram + TikTok","deliverables":"1 Feed + 1 TikTok video","budget_total":"20000000","slots_total":"6","deadline_content":"2024-02-20","deadline_posting":"2024-02-25","status":"completed","pic_admin":"Admin A","brief_url":"https://drive.google.com/xxx","notes":"Focus on promo code","created_at":"2026-05-01","updated_at":"2026-05-23","apply_deadline":"2024-02-15","min_followers":"15000","target_niche":"F&B"},{"campaign_id":"CAM-24-003","brand_name":"Erigo","campaign_name":"Erigo Spring Collection","objective":"Brand Awareness","platform":"Instagram","deliverables":"2 Feed + 3 Story","budget_total":"25000000","slots_total":"8","deadline_content":"2024-03-10","deadline_posting":"2024-03-15","status":"completed","pic_admin":"Admin B","brief_url":"https://drive.google.com/xxx","notes":"Fashion collab","created_at":"2026-04-23","updated_at":"2026-05-23","apply_deadline":"2024-03-01","min_followers":"25000","target_niche":"Fashion, Lifestyle"},{"campaign_id":"CAM-24-004","brand_name":"Chatime","campaign_name":"Chatime Ramadan Special","objective":"Brand Awareness","platform":"TikTok","deliverables":"1 TikTok video + 1 Reel","budget_total":"18000000","slots_total":"5","deadline_content":"2024-03-20","deadline_posting":"2024-03-25","status":"ongoing","pic_admin":"Admin A","brief_url":"https://drive.google.com/xxx","notes":"Ramadan content","created_at":"2026-04-01","updated_at":"2026-05-23","apply_deadline":"2024-03-15","min_followers":"20000","target_niche":"F&B, Lifestyle"},{"campaign_id":"CAM-24-005","brand_name":"Implora","campaign_name":"Implora x Beauty Creator","objective":"Conversion","platform":"Instagram + TikTok","deliverables":"1 Reel + 1 TikTok + 2 Story","budget_total":"30000000","slots_total":"6","deadline_content":"2024-04-05","deadline_posting":"2024-04-10","status":"open","pic_admin":"Admin B","brief_url":"https://drive.google.com/xxx","notes":"Use promo code IMPLORA20","created_at":"2026-05-12","updated_at":"2026-05-23","apply_deadline":"2024-04-01","min_followers":"30000","target_niche":"Beauty"},{"campaign_id":"CAM-24-006","brand_name":"Richeese Factory","campaign_name":"Richeese Viral Campaign","objective":"Brand Awareness","platform":"TikTok","deliverables":"2 TikTok video","budget_total":"12000000","slots_total":"8","deadline_content":"2024-04-15","deadline_posting":"2024-04-20","status":"open","pic_admin":"Admin A","brief_url":"https://drive.google.com/xxx","notes":"Viral style content","created_at":"2026-04-01","updated_at":"2026-05-23","apply_deadline":"2024-04-10","min_followers":"10000","target_niche":"F&B"}],"assignments":[{"assignment_id":"ASG-0001","campaign_id":"CAM-24-001","creator_id":"rizkyandini","creator_name":"Rizky Andini","ig_username":"@rizkyandini","status":"posted","rate_agreed":"4500000","deliverable_detail":"","deadline_draft":"2024-02-12","deadline_post":"2024-02-14","draft_submitted_at":"","posted_at":"2024-02-14","post_url":"https://ig.com/p/posted1","payment_status":"done","campaign_name_cached":"Kampanye Kopi Kenangan Q1","applied_at":"2026-05-19 08:55","waitlist_position":"1","apply_reason":"Konten F&B sering viral","reference_url":"ig.com/p/a1","available_from":"2024-02-10","creator_question":"","payment_date":"2024-02-20","notes_admin":"","content_rating":"4.4"},{"assignment_id":"ASG-0002","campaign_id":"CAM-24-001","creator_id":"dinafoodies","creator_name":"Dina Rahmawati","ig_username":"@dinafoodies","status":"posted","rate_agreed":"2500000","deliverable_detail":"","deadline_draft":"2024-02-13","deadline_post":"2024-02-15","draft_submitted_at":"","posted_at":"2024-02-15","post_url":"https://ig.com/p/posted2","payment_status":"done","campaign_name_cached":"Kampanye Kopi Kenangan Q1","applied_at":"2026-05-15 08:55","waitlist_position":"2","apply_reason":"Sering review kopi","reference_url":"ig.com/p/a2","available_from":"2024-02-10","creator_question":"","payment_date":"2024-02-20","notes_admin":"","content_rating":"3.9"},{"assignment_id":"ASG-0003","campaign_id":"CAM-24-001","creator_id":"makandijakarta","creator_name":"Budi Santoso","ig_username":"@makandijakarta","status":"posted","rate_agreed":"3200000","deliverable_detail":"","deadline_draft":"2024-02-14","deadline_post":"2024-02-15","draft_submitted_at":"","posted_at":"2024-02-15","post_url":"https://ig.com/p/posted3","payment_status":"done","campaign_name_cached":"Kampanye Kopi Kenangan Q1","applied_at":"2026-05-06 08:55","waitlist_position":"3","apply_reason":"Fokus kuliner","reference_url":"ig.com/p/a3","available_from":"2024-02-10","creator_question":"","payment_date":"2024-02-20","notes_admin":"","content_rating":"4.7"},{"assignment_id":"ASG-0004","campaign_id":"CAM-24-001","creator_id":"lifestylebyluki","creator_name":"Luki Prasetyo","ig_username":"@lifestylebyluki","status":"posted","rate_agreed":"5000000","deliverable_detail":"","deadline_draft":"2024-02-13","deadline_post":"2024-02-15","draft_submitted_at":"","posted_at":"2024-02-15","post_url":"https://ig.com/p/posted4","payment_status":"done","campaign_name_cached":"Kampanye Kopi Kenangan Q1","applied_at":"2026-05-22 08:55","waitlist_position":"4","apply_reason":"Lifestyle & kopi","reference_url":"ig.com/p/a4","available_from":"2024-02-10","creator_question":"","payment_date":"2024-02-22","notes_admin":"","content_rating":"4.0"},{"assignment_id":"ASG-0005","campaign_id":"CAM-24-001","creator_id":"foodiemedan","creator_name":"Toni Harahap","ig_username":"@foodiemedan","status":"posted","rate_agreed":"4000000","deliverable_detail":"","deadline_draft":"2024-02-14","deadline_post":"2024-02-15","draft_submitted_at":"","posted_at":"2024-02-15","post_url":"https://ig.com/p/posted5","payment_status":"done","campaign_name_cached":"Kampanye Kopi Kenangan Q1","applied_at":"2026-05-15 08:55","waitlist_position":"5","apply_reason":"Strong Medan market","reference_url":"ig.com/p/a5","available_from":"2024-02-10","creator_question":"","payment_date":"2024-02-22","notes_admin":"","content_rating":"3.5"},{"assignment_id":"ASG-0006","campaign_id":"CAM-24-002","creator_id":"beautybyara","creator_name":"Ara Kusumawati","ig_username":"@beautybyara","status":"posted","rate_agreed":"7500000","deliverable_detail":"","deadline_draft":"2024-02-22","deadline_post":"2024-02-24","draft_submitted_at":"","posted_at":"2024-02-24","post_url":"https://ig.com/p/posted6","payment_status":"done","campaign_name_cached":"Fore x Creator Feb","applied_at":"2026-05-16 08:55","waitlist_position":"6","apply_reason":"Beauty x lifestyle overlap","reference_url":"ig.com/p/b1","available_from":"2024-02-18","creator_question":"","payment_date":"2024-03-01","notes_admin":"","content_rating":"4.3"},{"assignment_id":"ASG-0007","campaign_id":"CAM-24-002","creator_id":"rizkyandini","creator_name":"Rizky Andini","ig_username":"@rizkyandini","status":"posted","rate_agreed":"4500000","deliverable_detail":"","deadline_draft":"2024-02-21","deadline_post":"2024-02-24","draft_submitted_at":"","posted_at":"2024-02-24","post_url":"https://ig.com/p/posted7","payment_status":"done","campaign_name_cached":"Fore x Creator Feb","applied_at":"2026-05-05 08:55","waitlist_position":"7","apply_reason":"Repeat collab","reference_url":"ig.com/p/b2","available_from":"2024-02-18","creator_question":"","payment_date":"2024-03-01","notes_admin":"","content_rating":"4.0"},{"assignment_id":"ASG-0008","campaign_id":"CAM-24-002","creator_id":"travelbyreza","creator_name":"Reza Firmansyah","ig_username":"@travelbyreza","status":"posted","rate_agreed":"4000000","deliverable_detail":"","deadline_draft":"2024-02-22","deadline_post":"2024-02-25","draft_submitted_at":"","posted_at":"2024-02-25","post_url":"https://ig.com/p/posted8","payment_status":"done","campaign_name_cached":"Fore x Creator Feb","applied_at":"2026-05-05 08:55","waitlist_position":"8","apply_reason":"Lifestyle relevant","reference_url":"ig.com/p/b3","available_from":"2024-02-18","creator_question":"","payment_date":"2024-03-01","notes_admin":"","content_rating":"3.7"},{"assignment_id":"ASG-0009","campaign_id":"CAM-24-002","creator_id":"makandijakarta","creator_name":"Budi Santoso","ig_username":"@makandijakarta","status":"posted","rate_agreed":"3200000","deliverable_detail":"","deadline_draft":"2024-02-22","deadline_post":"2024-02-25","draft_submitted_at":"","posted_at":"2024-02-25","post_url":"https://ig.com/p/posted9","payment_status":"done","campaign_name_cached":"Fore x Creator Feb","applied_at":"2026-05-22 08:55","waitlist_position":"9","apply_reason":"F&B expert","reference_url":"ig.com/p/b4","available_from":"2024-02-18","creator_question":"","payment_date":"2024-03-02","notes_admin":"","content_rating":"3.8"},{"assignment_id":"ASG-0010","campaign_id":"CAM-24-002","creator_id":"dinafoodies","creator_name":"Dina Rahmawati","ig_username":"@dinafoodies","status":"posted","rate_agreed":"2500000","deliverable_detail":"","deadline_draft":"2024-02-23","deadline_post":"2024-02-25","draft_submitted_at":"","posted_at":"2024-02-25","post_url":"https://ig.com/p/posted10","payment_status":"done","campaign_name_cached":"Fore x Creator Feb","applied_at":"2026-05-14 08:55","waitlist_position":"10","apply_reason":"F&B niche","reference_url":"ig.com/p/b5","available_from":"2024-02-18","creator_question":"","payment_date":"2024-03-02","notes_admin":"","content_rating":"4.9"},{"assignment_id":"ASG-0011","campaign_id":"CAM-24-002","creator_id":"fitnessbynanda","creator_name":"Nanda Oktavia","ig_username":"@fitnessbynanda","status":"posted","rate_agreed":"3000000","deliverable_detail":"","deadline_draft":"2024-02-23","deadline_post":"2024-02-25","draft_submitted_at":"","posted_at":"2024-02-25","post_url":"https://ig.com/p/posted11","payment_status":"done","campaign_name_cached":"Fore x Creator Feb","applied_at":"2026-05-17 08:55","waitlist_position":"11","apply_reason":"Young audience","reference_url":"ig.com/p/b6","available_from":"2024-02-18","creator_question":"","payment_date":"2024-03-02","notes_admin":"","content_rating":"4.9"},{"assignment_id":"ASG-0012","campaign_id":"CAM-24-003","creator_id":"lifestylebyluki","creator_name":"Luki Prasetyo","ig_username":"@lifestylebyluki","status":"posted","rate_agreed":"5500000","deliverable_detail":"","deadline_draft":"2024-03-09","deadline_post":"2024-03-12","draft_submitted_at":"","posted_at":"2024-03-12","post_url":"https://ig.com/p/posted12","payment_status":"done","campaign_name_cached":"Erigo Spring Collection","applied_at":"2026-05-13 08:55","waitlist_position":"12","apply_reason":"Lifestyle fashion","reference_url":"ig.com/p/c1","available_from":"2024-03-05","creator_question":"","payment_date":"2024-03-18","notes_admin":"","content_rating":"4.3"},{"assignment_id":"ASG-0013","campaign_id":"CAM-24-003","creator_id":"beautybyara","creator_name":"Ara Kusumawati","ig_username":"@beautybyara","status":"posted","rate_agreed":"8000000","deliverable_detail":"","deadline_draft":"2024-03-09","deadline_post":"2024-03-14","draft_submitted_at":"","posted_at":"2024-03-14","post_url":"https://ig.com/p/posted13","payment_status":"done","campaign_name_cached":"Erigo Spring Collection","applied_at":"2026-05-07 08:55","waitlist_position":"13","apply_reason":"Fashion-beauty overlap","reference_url":"ig.com/p/c2","available_from":"2024-03-05","creator_question":"","payment_date":"2024-03-18","notes_admin":"","content_rating":"4.9"},{"assignment_id":"ASG-0014","campaign_id":"CAM-24-003","creator_id":"sarilifestyle","creator_name":"Sari Dewi","ig_username":"@sarilifestyle","status":"posted","rate_agreed":"2200000","deliverable_detail":"","deadline_draft":"2024-03-10","deadline_post":"2024-03-14","draft_submitted_at":"","posted_at":"2024-03-14","post_url":"https://ig.com/p/posted14","payment_status":"done","campaign_name_cached":"Erigo Spring Collection","applied_at":"2026-05-08 08:55","waitlist_position":"14","apply_reason":"Lifestyle parent audience","reference_url":"ig.com/p/c3","available_from":"2024-03-05","creator_question":"","payment_date":"2024-03-20","notes_admin":"","content_rating":"4.3"},{"assignment_id":"ASG-0015","campaign_id":"CAM-24-004","creator_id":"dinafoodies","creator_name":"Dina Rahmawati","ig_username":"@dinafoodies","status":"assigned","rate_agreed":"2500000","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Chatime Ramadan Special","applied_at":"2026-05-16 08:55","waitlist_position":"15","apply_reason":"F&B ramadan content","reference_url":"ig.com/p/d1","available_from":"2024-03-18","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0016","campaign_id":"CAM-24-004","creator_id":"makandijakarta","creator_name":"Budi Santoso","ig_username":"@makandijakarta","status":"assigned","rate_agreed":"3200000","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Chatime Ramadan Special","applied_at":"2026-05-05 08:55","waitlist_position":"16","apply_reason":"Kuliner ramadan","reference_url":"ig.com/p/d2","available_from":"2024-03-18","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0017","campaign_id":"CAM-24-004","creator_id":"kulinerbatam","creator_name":"Hendra Wijaya","ig_username":"@kulinerbatam","status":"assigned","rate_agreed":"1800000","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Chatime Ramadan Special","applied_at":"2026-05-05 08:55","waitlist_position":"17","apply_reason":"Batam market","reference_url":"ig.com/p/d3","available_from":"2024-03-18","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0018","campaign_id":"CAM-24-005","creator_id":"beautybyara","creator_name":"Ara Kusumawati","ig_username":"@beautybyara","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Implora x Beauty Creator","applied_at":"2026-05-07 08:55","waitlist_position":"18","apply_reason":"Beauty expert, audience cocok","reference_url":"ig.com/p/e1","available_from":"2024-04-02","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0019","campaign_id":"CAM-24-005","creator_id":"fitnessbynanda","creator_name":"Nanda Oktavia","ig_username":"@fitnessbynanda","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Implora x Beauty Creator","applied_at":"2026-05-16 08:55","waitlist_position":"19","apply_reason":"Young female audience","reference_url":"ig.com/p/e2","available_from":"2024-04-02","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0020","campaign_id":"CAM-24-005","creator_id":"stylekuindah","creator_name":"Indah Permata","ig_username":"@stylekuindah","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Implora x Beauty Creator","applied_at":"2026-05-14 08:55","waitlist_position":"20","apply_reason":"Beauty niche","reference_url":"ig.com/p/e3","available_from":"2024-04-03","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0021","campaign_id":"CAM-24-006","creator_id":"rizkyandini","creator_name":"Rizky Andini","ig_username":"@rizkyandini","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Richeese Viral Campaign","applied_at":"2026-05-08 08:55","waitlist_position":"21","apply_reason":"F&B viral content","reference_url":"ig.com/p/f1","available_from":"2024-04-11","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0022","campaign_id":"CAM-24-006","creator_id":"dinafoodies","creator_name":"Dina Rahmawati","ig_username":"@dinafoodies","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Richeese Viral Campaign","applied_at":"2026-05-05 08:55","waitlist_position":"22","apply_reason":"F&B Batam","reference_url":"ig.com/p/f2","available_from":"2024-04-11","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0023","campaign_id":"CAM-24-006","creator_id":"makandijakarta","creator_name":"Budi Santoso","ig_username":"@makandijakarta","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Richeese Viral Campaign","applied_at":"2026-05-21 08:55","waitlist_position":"23","apply_reason":"F&B Jakarta","reference_url":"ig.com/p/f3","available_from":"2024-04-12","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0024","campaign_id":"CAM-24-006","creator_id":"foodiemedan","creator_name":"Toni Harahap","ig_username":"@foodiemedan","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Richeese Viral Campaign","applied_at":"2026-05-05 08:55","waitlist_position":"24","apply_reason":"F&B strong","reference_url":"ig.com/p/f4","available_from":"2024-04-12","creator_question":"","payment_date":"","notes_admin":"","content_rating":""},{"assignment_id":"ASG-0025","campaign_id":"CAM-24-006","creator_id":"kulinerbatam","creator_name":"Hendra Wijaya","ig_username":"@kulinerbatam","status":"waiting","rate_agreed":"0","deliverable_detail":"","deadline_draft":"","deadline_post":"","draft_submitted_at":"","posted_at":"","post_url":"","payment_status":"pending","campaign_name_cached":"Richeese Viral Campaign","applied_at":"2026-05-13 08:55","waitlist_position":"25","apply_reason":"F&B Batam local","reference_url":"ig.com/p/f5","available_from":"2024-04-13","creator_question":"","payment_date":"","notes_admin":"","content_rating":""}],"performance":[{"perf_id":"PRF-0001","assignment_id":"ASG-0001","campaign_id":"CAM-24-001","creator_id":"rizkyandini","recorded_at":"2026-04-25 08:55","days_after_post":"1","reach":"54630","views":"71933","likes":"1788","comments":"330","shares":"275","saves":"357","engagement_rate":"5.03","notes":""},{"perf_id":"PRF-0002","assignment_id":"ASG-0001","campaign_id":"CAM-24-001","creator_id":"rizkyandini","recorded_at":"2026-05-02 08:55","days_after_post":"7","reach":"55700","views":"65197","likes":"1658","comments":"306","shares":"255","saves":"331","engagement_rate":"4.58","notes":""},{"perf_id":"PRF-0003","assignment_id":"ASG-0002","campaign_id":"CAM-24-001","creator_id":"dinafoodies","recorded_at":"2026-05-01 08:55","days_after_post":"1","reach":"34936","views":"41448","likes":"772","comments":"142","shares":"118","saves":"154","engagement_rate":"3.39","notes":""},{"perf_id":"PRF-0004","assignment_id":"ASG-0002","campaign_id":"CAM-24-001","creator_id":"dinafoodies","recorded_at":"2026-05-10 08:55","days_after_post":"7","reach":"31016","views":"44230","likes":"911","comments":"168","shares":"140","saves":"182","engagement_rate":"4.52","notes":""},{"perf_id":"PRF-0005","assignment_id":"ASG-0003","campaign_id":"CAM-24-001","creator_id":"makandijakarta","recorded_at":"2026-05-07 08:55","days_after_post":"1","reach":"44232","views":"59998","likes":"998","comments":"184","shares":"153","saves":"199","engagement_rate":"3.47","notes":""},{"perf_id":"PRF-0006","assignment_id":"ASG-0003","campaign_id":"CAM-24-001","creator_id":"makandijakarta","recorded_at":"2026-04-23 08:55","days_after_post":"7","reach":"37598","views":"54491","likes":"847","comments":"156","shares":"130","saves":"169","engagement_rate":"3.46","notes":""},{"perf_id":"PRF-0007","assignment_id":"ASG-0004","campaign_id":"CAM-24-001","creator_id":"lifestylebyluki","recorded_at":"2026-05-15 08:55","days_after_post":"1","reach":"65764","views":"81936","likes":"1661","comments":"306","shares":"255","saves":"332","engagement_rate":"3.88","notes":""},{"perf_id":"PRF-0008","assignment_id":"ASG-0004","campaign_id":"CAM-24-001","creator_id":"lifestylebyluki","recorded_at":"2026-05-09 08:55","days_after_post":"7","reach":"68850","views":"93775","likes":"1314","comments":"242","shares":"202","saves":"262","engagement_rate":"2.93","notes":""},{"perf_id":"PRF-0009","assignment_id":"ASG-0005","campaign_id":"CAM-24-001","creator_id":"foodiemedan","recorded_at":"2026-04-28 08:55","days_after_post":"1","reach":"67229","views":"97037","likes":"1498","comments":"276","shares":"230","saves":"299","engagement_rate":"3.43","notes":""},{"perf_id":"PRF-0010","assignment_id":"ASG-0005","campaign_id":"CAM-24-001","creator_id":"foodiemedan","recorded_at":"2026-04-28 08:55","days_after_post":"7","reach":"69017","views":"89544","likes":"1950","comments":"360","shares":"300","saves":"390","engagement_rate":"4.35","notes":""},{"perf_id":"PRF-0011","assignment_id":"ASG-0006","campaign_id":"CAM-24-002","creator_id":"beautybyara","recorded_at":"2026-05-20 08:55","days_after_post":"1","reach":"101520","views":"126118","likes":"3334","comments":"615","shares":"512","saves":"666","engagement_rate":"5.05","notes":""},{"perf_id":"PRF-0012","assignment_id":"ASG-0006","campaign_id":"CAM-24-002","creator_id":"beautybyara","recorded_at":"2026-05-03 08:55","days_after_post":"7","reach":"111734","views":"129666","likes":"3449","comments":"636","shares":"530","saves":"689","engagement_rate":"4.75","notes":""},{"perf_id":"PRF-0013","assignment_id":"ASG-0007","campaign_id":"CAM-24-002","creator_id":"rizkyandini","recorded_at":"2026-05-14 08:55","days_after_post":"1","reach":"46392","views":"59193","likes":"1173","comments":"216","shares":"180","saves":"234","engagement_rate":"3.89","notes":""},{"perf_id":"PRF-0014","assignment_id":"ASG-0007","campaign_id":"CAM-24-002","creator_id":"rizkyandini","recorded_at":"2026-04-24 08:55","days_after_post":"7","reach":"53078","views":"61081","likes":"1352","comments":"249","shares":"208","saves":"270","engagement_rate":"3.92","notes":""},{"perf_id":"PRF-0015","assignment_id":"ASG-0008","campaign_id":"CAM-24-002","creator_id":"travelbyreza","recorded_at":"2026-04-24 08:55","days_after_post":"1","reach":"56802","views":"83253","likes":"1157","comments":"213","shares":"178","saves":"231","engagement_rate":"3.13","notes":""},{"perf_id":"PRF-0016","assignment_id":"ASG-0008","campaign_id":"CAM-24-002","creator_id":"travelbyreza","recorded_at":"2026-05-16 08:55","days_after_post":"7","reach":"49353","views":"63364","likes":"861","comments":"158","shares":"132","saves":"172","engagement_rate":"2.68","notes":""},{"perf_id":"PRF-0017","assignment_id":"ASG-0009","campaign_id":"CAM-24-002","creator_id":"makandijakarta","recorded_at":"2026-05-11 08:55","days_after_post":"1","reach":"40157","views":"53759","likes":"707","comments":"130","shares":"108","saves":"141","engagement_rate":"2.7","notes":""},{"perf_id":"PRF-0018","assignment_id":"ASG-0009","campaign_id":"CAM-24-002","creator_id":"makandijakarta","recorded_at":"2026-05-15 08:55","days_after_post":"7","reach":"45769","views":"61770","likes":"911","comments":"168","shares":"140","saves":"182","engagement_rate":"3.06","notes":""},{"perf_id":"PRF-0019","assignment_id":"ASG-0010","campaign_id":"CAM-24-002","creator_id":"dinafoodies","recorded_at":"2026-05-15 08:55","days_after_post":"1","reach":"28871","views":"37495","likes":"711","comments":"131","shares":"109","saves":"142","engagement_rate":"3.79","notes":""},{"perf_id":"PRF-0020","assignment_id":"ASG-0010","campaign_id":"CAM-24-002","creator_id":"dinafoodies","recorded_at":"2026-05-18 08:55","days_after_post":"7","reach":"31313","views":"42696","likes":"870","comments":"160","shares":"133","saves":"174","engagement_rate":"4.27","notes":""},{"perf_id":"PRF-0021","assignment_id":"ASG-0011","campaign_id":"CAM-24-002","creator_id":"fitnessbynanda","recorded_at":"2026-04-29 08:55","days_after_post":"1","reach":"41533","views":"55345","likes":"1196","comments":"220","shares":"184","saves":"239","engagement_rate":"4.43","notes":""},{"perf_id":"PRF-0022","assignment_id":"ASG-0011","campaign_id":"CAM-24-002","creator_id":"fitnessbynanda","recorded_at":"2026-04-30 08:55","days_after_post":"7","reach":"38011","views":"45857","likes":"1119","comments":"206","shares":"172","saves":"223","engagement_rate":"4.53","notes":""},{"perf_id":"PRF-0023","assignment_id":"ASG-0012","campaign_id":"CAM-24-003","creator_id":"lifestylebyluki","recorded_at":"2026-05-11 08:55","days_after_post":"1","reach":"69974","views":"97224","likes":"1887","comments":"348","shares":"290","saves":"377","engagement_rate":"4.15","notes":""},{"perf_id":"PRF-0024","assignment_id":"ASG-0012","campaign_id":"CAM-24-003","creator_id":"lifestylebyluki","recorded_at":"2026-05-11 08:55","days_after_post":"7","reach":"76087","views":"107123","likes":"2023","comments":"373","shares":"311","saves":"404","engagement_rate":"4.09","notes":""},{"perf_id":"PRF-0025","assignment_id":"ASG-0013","campaign_id":"CAM-24-003","creator_id":"beautybyara","recorded_at":"2026-05-15 08:55","days_after_post":"1","reach":"93955","views":"133911","likes":"3545","comments":"654","shares":"545","saves":"709","engagement_rate":"5.8","notes":""},{"perf_id":"PRF-0026","assignment_id":"ASG-0013","campaign_id":"CAM-24-003","creator_id":"beautybyara","recorded_at":"2026-05-18 08:55","days_after_post":"7","reach":"111199","views":"150290","likes":"3822","comments":"705","shares":"588","saves":"764","engagement_rate":"5.29","notes":""},{"perf_id":"PRF-0027","assignment_id":"ASG-0014","campaign_id":"CAM-24-003","creator_id":"sarilifestyle","recorded_at":"2026-05-05 08:55","days_after_post":"1","reach":"26826","views":"37636","likes":"428","comments":"79","shares":"65","saves":"85","engagement_rate":"2.45","notes":""},{"perf_id":"PRF-0028","assignment_id":"ASG-0014","campaign_id":"CAM-24-003","creator_id":"sarilifestyle","recorded_at":"2026-05-18 08:55","days_after_post":"7","reach":"27004","views":"38963","likes":"492","comments":"90","shares":"75","saves":"98","engagement_rate":"2.8","notes":""}]};
+
+// ─── HELPERS ─────────────────────────────────────────────────
+const GAS_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+const DEMO_MODE = true;
+const WA_LINK = 'https://chat.whatsapp.com/XXXXXXXXX';
+const FORM_BASE = 'https://yoursite.com/creator-campaign-apply.html';
+const ONBOARDING_URL = 'https://yoursite.com/creator-onboarding-form.html';
+
+function fmt(n){n=parseInt(n)||0;if(n>=1000000)return(n/1e6).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'K';return n.toString();}
+function fmtIDR(n){return'Rp '+(parseInt(n)||0).toLocaleString('id-ID');}
+function statusBadge(s){
+  const m={active:['Active','green'],inactive:['Inactive','amber'],blacklist:['Blacklist','red'],
+    waiting:['Waiting','amber'],approved:['Approved','green'],assigned:['Assigned','blue'],
+    posted:['Posted','green'],rejected:['Rejected','red'],open:['Open','green'],
+    ongoing:['Ongoing','blue'],completed:['Completed','gray'],cancelled:['Cancelled','red']};
+  const [label,color]=m[s]||[s,'gray'];
+  return `<span class="badge badge-${color}">${label}</span>`;
+}
+function scoreClass(s){s=parseFloat(s)||0;if(s>=80)return'hi';if(s>=60)return'mid';return'lo';}
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type;
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ─── DB HELPERS ───────────────────────────────────────────────
+function getAssignmentsForCampaign(campId){return DB.assignments.filter(a=>a.campaign_id===campId);}
+function getWaiting(campId){return DB.assignments.filter(a=>a.campaign_id===campId&&a.status==='waiting');}
+function getApproved(campId){return DB.assignments.filter(a=>a.campaign_id===campId&&['approved','assigned','posted','delivered'].includes(a.status));}
+function getCreatorById(id){return DB.creators.find(c=>c.creator_id===id);}
+function getPerfForCreator(id){return DB.performance.filter(p=>p.creator_id===id);}
+function getCampaignHistory(creatorId){
+  return DB.assignments.filter(a=>a.creator_id===creatorId&&['posted','paid','assigned'].includes(a.status));
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event&&event.currentTarget&&event.currentTarget.classList.add('active');
+
+  const titles={dashboard:'Dashboard',creators:'KOL Database',campaigns:'Campaigns',waitinglist:'Waiting List'};
+  document.getElementById('pageTitle').textContent=titles[id]||id;
+  if(id==='creators')renderCreators();
+  if(id==='campaigns')renderCampaigns('');
+  if(id==='waitinglist')initWLDropdown();
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+// ─── DASHBOARD ────────────────────────────────────────────────
+function renderDashboard(){
+  const creators=DB.creators;
+  const active=creators.filter(c=>c.status==='active').length;
+  const inactive=creators.filter(c=>c.status==='inactive').length;
+  const campaigns=DB.campaigns;
+  const openC=campaigns.filter(c=>c.status==='open').length;
+  const ongoingC=campaigns.filter(c=>c.status==='ongoing').length;
+  const waiting=DB.assignments.filter(a=>a.status==='waiting').length;
+
+  document.getElementById('wl-badge').textContent=waiting;
+
+  document.getElementById('statGrid').innerHTML=`
+    <div class="stat-card c-green"><div class="stat-card-val">${active}</div><div class="stat-card-label">Creator aktif</div><div class="stat-card-sub" style="color:var(--ink-g)">${creators.length} total terdaftar</div></div>
+    <div class="stat-card c-amber"><div class="stat-card-val">${inactive}</div><div class="stat-card-label">Pending review</div><div class="stat-card-sub" style="color:var(--ink-g)">Menunggu aktivasi</div></div>
+    <div class="stat-card c-blue"><div class="stat-card-val">${openC}</div><div class="stat-card-label">Campaign open</div><div class="stat-card-sub" style="color:var(--ink-g)">${ongoingC} sedang berjalan</div></div>
+    <div class="stat-card c-red"><div class="stat-card-val">${waiting}</div><div class="stat-card-label">Waiting approval</div><div class="stat-card-sub" style="color:var(--ink-g)">Perlu review admin</div></div>
+  `;
+
+  // Active campaigns
+  const activeCamps=campaigns.filter(c=>['open','ongoing'].includes(c.status));
+  document.getElementById('dashCampaigns').innerHTML=activeCamps.map(c=>{
+    const filled=getApproved(c.campaign_id).length;
+    const total=parseInt(c.slots_total)||1;
+    const pct=Math.round(filled/total*100);
+    return`<div style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div><div style="font-weight:500;font-size:13px;">${c.campaign_name}</div><div style="font-size:11px;color:var(--ink-g);">${c.brand_name}</div></div>
+        ${statusBadge(c.status)}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:4px;background:var(--border);border-radius:999px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:999px;"></div></div>
+        <span style="font-size:11px;color:var(--ink-g);">${filled}/${total} slot</span>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty-state">Tidak ada campaign aktif</div>';
+
+  // Waiting approvals (top 5)
+  const waitRows=DB.assignments.filter(a=>a.status==='waiting').slice(0,5);
+  document.getElementById('dashWaiting').innerHTML=waitRows.map(a=>{
+    const c=getCreatorById(a.creator_id);
+    const score=c?c.score_total:'—';
+    return`<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div><div style="font-weight:500;font-size:13px;">${a.creator_name}</div><div style="font-size:11px;color:var(--ink-g);">${a.campaign_name_cached}</div></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:12px;color:var(--ink-g);">Score: <strong>${score}</strong></span>
+        <button class="btn btn-approve btn-sm" onclick="quickApprove('${a.assignment_id}','${a.creator_name}')">✓</button>
+        <button class="btn btn-reject btn-sm" onclick="quickReject('${a.assignment_id}','${a.creator_name}')">✕</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty-state" style="padding:20px;">Tidak ada yang menunggu</div>';
+}
+
+// ─── CREATORS ─────────────────────────────────────────────────
+function renderCreators(data){
+  data=data||DB.creators;
+  document.getElementById('creatorCount').textContent=data.length+' creator';
+  const tbody=document.getElementById('creatorTbody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state">Tidak ada creator</div></td></tr>';return;}
+  tbody.innerHTML=data.map(c=>{
+    const sc=parseFloat(c.score_total)||0;
+    const cls=scoreClass(sc);
+    return`<tr>
+      <td><div class="td-name">${c.full_name}</div><div class="td-ig">@${c.ig_username}</div></td>
+      <td>${fmt(c.followers_ig)} IG${c.followers_tiktok>0?' · '+fmt(c.followers_tiktok)+' TT':''}</td>
+      <td><span style="font-size:12px;">${c.niche||'—'}</span></td>
+      <td>${c.domisili||'—'}</td>
+      <td><div class="score-bar"><div class="score-track"><div class="score-fill ${cls}" style="width:${sc}%"></div></div><strong>${sc||'—'}</strong></div></td>
+      <td>${statusBadge(c.status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick='showCreatorProfile("${c.creator_id}")'>Detail</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterCreators(){
+  const q=(document.getElementById('srchCreator').value||'').toLowerCase();
+  const niche=document.getElementById('fltNiche').value;
+  const status=document.getElementById('fltStatus').value;
+  const dom=document.getElementById('fltDomisili').value;
+  const minF=parseInt(document.getElementById('fltFollowers').value)||0;
+  const filtered=DB.creators.filter(c=>{
+    if(q&&!c.full_name.toLowerCase().includes(q)&&!(c.ig_username||'').toLowerCase().includes(q))return false;
+    if(niche&&!(c.niche||'').includes(niche))return false;
+    if(status&&c.status!==status)return false;
+    if(dom&&c.domisili!==dom)return false;
+    if(minF&&(parseInt(c.followers_ig)||0)<minF)return false;
+    return true;
+  });
+  renderCreators(filtered);
+}
+
+function showCreatorProfile(id){
+  const c=getCreatorById(id);
+  if(!c)return;
+  document.getElementById('modalCreatorTitle').textContent=c.full_name;
+  const perfs=getPerfForCreator(id);
+  const avgER=perfs.length?Math.round(perfs.reduce((s,p)=>s+(parseFloat(p.engagement_rate)||0),0)/perfs.length*100)/100:0;
+  const history=getCampaignHistory(id);
+
+  document.getElementById('modalCreatorBody').innerHTML=`
+    <div class="creator-meta">
+      <div class="meta-item"><div class="meta-label">Creator ID</div><div class="meta-value">@${c.ig_username}</div></div>
+      <div class="meta-item"><div class="meta-label">Score</div><div class="meta-value" style="color:var(--accent)">${c.score_total||'—'}</div></div>
+      <div class="meta-item"><div class="meta-label">Followers IG</div><div class="meta-value">${fmt(c.followers_ig)}</div></div>
+      <div class="meta-item"><div class="meta-label">Avg ER</div><div class="meta-value">${avgER?avgER+'%':'—'}</div></div>
+      <div class="meta-item"><div class="meta-label">Niche</div><div class="meta-value">${c.niche||'—'}</div></div>
+      <div class="meta-item"><div class="meta-label">Domisili</div><div class="meta-value">${c.domisili||'—'}</div></div>
+      <div class="meta-item"><div class="meta-label">Posting/minggu</div><div class="meta-value">${c.posting_frequency||'—'}</div></div>
+      <div class="meta-item"><div class="meta-label">Availability</div><div class="meta-value">${c.availability_days||'—'}</div></div>
+    </div>
+    <div style="margin-bottom:14px;padding:12px 14px;background:var(--surface2);border-radius:8px;font-size:13px;color:var(--ink-s);">
+      <strong style="color:var(--ink);display:block;margin-bottom:3px;">Pengalaman endorse</strong>${c.endorse_experience||'Belum ada data'}
+    </div>
+    <div style="margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);">Riwayat campaign (${history.length})</div>
+    ${history.length?history.map(a=>`<div class="history-row"><span>${a.campaign_name_cached}</span><div style="display:flex;gap:8px;align-items:center;">${statusBadge(a.status)}<span style="font-size:12px;color:var(--ink-g);">${a.applied_at?.split(' ')[0]||''}</span></div></div>`).join('')
+    :'<div style="font-size:13px;color:var(--ink-g);padding:8px 0;">Belum pernah ikut campaign</div>'}
+    ${c.notes_internal?`<div style="margin-top:14px;padding:10px 12px;background:var(--amber-s);border-radius:8px;font-size:12px;color:var(--amber);">📝 Catatan internal: ${c.notes_internal}</div>`:''}
+  `;
+
+  document.getElementById('modalApproveBtn').onclick=()=>updateCreatorStatus(id,'active');
+  document.getElementById('modalBlacklistBtn').onclick=()=>updateCreatorStatus(id,'blacklist');
+  openModal('creatorModal');
+}
+
+function updateCreatorStatus(id,status){
+  const c=DB.creators.find(c=>c.creator_id===id);
+  if(c){c.status=status;renderCreators();}
+  toast('Status creator diperbarui: '+status);
+  closeModal('creatorModal');
+}
+
+function recalcScores(){
+  toast('Score akan dihitung ulang via GAS trigger...','success');
+}
+
+// ─── CAMPAIGNS ────────────────────────────────────────────────
+function renderCampaigns(filterStatus){
+  const camps=filterStatus?DB.campaigns.filter(c=>c.status===filterStatus):DB.campaigns;
+  document.getElementById('campGrid').innerHTML=camps.map(c=>{
+    const filled=getApproved(c.campaign_id).length;
+    const waiting=getWaiting(c.campaign_id).length;
+    const total=parseInt(c.slots_total)||1;
+    const pct=Math.round(filled/total*100);
+    return`<div class="camp-card">
+      <div class="camp-card-head">
+        <div class="camp-card-brand">${c.brand_name}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="camp-card-name">${c.campaign_name}</div>
+          ${statusBadge(c.status)}
+        </div>
+      </div>
+      <div class="camp-card-body">
+        <div class="camp-detail-row"><span>Platform</span><span>${c.platform}</span></div>
+        <div class="camp-detail-row"><span>Deliverable</span><span>${c.deliverables||'—'}</span></div>
+        <div class="camp-detail-row"><span>Deadline post</span><span>${c.deadline_posting||'—'}</span></div>
+        <div class="camp-detail-row"><span>Waiting list</span><span style="font-weight:500;color:${waiting>0?'var(--amber)':'var(--ink-g)'};">${waiting} creator</span></div>
+        <div class="slot-mini">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-g);">
+            <span>Slot terisi</span><span>${filled}/${total}</span>
+          </div>
+          <div class="slot-mini-track"><div class="slot-mini-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <div class="camp-card-foot">
+        <button class="btn btn-ghost btn-sm" style="flex:1;" onclick='showWLForCampaign("${c.campaign_id}")'>Waiting list</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick='openShareModal("${c.campaign_id}")'><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── WAITING LIST ─────────────────────────────────────────────
+function initWLDropdown(){
+  const sel=document.getElementById('wlCampaignSelect');
+  const open=DB.campaigns.filter(c=>['open','ongoing'].includes(c.status));
+  sel.innerHTML='<option value="">Pilih campaign</option>'+
+    open.map(c=>`<option value="${c.campaign_id}">${c.campaign_name} (${getWaiting(c.campaign_id).length} waiting)</option>`).join('');
+}
+
+function showWLForCampaign(campId){
+  showPage('waitinglist');
+  setTimeout(()=>{
+    const sel=document.getElementById('wlCampaignSelect');
+    sel.value=campId;
+    renderWaitingList(campId);
+  },50);
+}
+
+function renderWaitingList(campId){
+  if(!campId){document.getElementById('wlContent').innerHTML='<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><div>Pilih campaign</div></div>';return;}
+  const assignments=getAssignmentsForCampaign(campId);
+  const camp=DB.campaigns.find(c=>c.campaign_id===campId);
+  const filledSlots=getApproved(campId).length;
+  const totalSlots=parseInt(camp?.slots_total)||1;
+
+  const waiting=assignments.filter(a=>a.status==='waiting').sort((a,b)=>new Date(a.applied_at)-new Date(b.applied_at));
+  const approved=assignments.filter(a=>['approved','assigned','posted'].includes(a.status));
+  const rejected=assignments.filter(a=>a.status==='rejected');
+
+  let html=`<div style="padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap;">
+    <span style="font-size:13px;">Campaign: <strong>${camp?.campaign_name||campId}</strong></span>
+    <span style="font-size:13px;">Slot: <strong style="color:${filledSlots>=totalSlots?'var(--red)':'var(--accent)'};">${filledSlots}/${totalSlots}</strong></span>
+    <span style="font-size:13px;">Waiting: <strong style="color:var(--amber);">${waiting.length}</strong></span>
+  </div>`;
+
+  // Tabs
+  html+=`<div class="tabs">
+    <div class="tab active" onclick="switchWLTab(this,'wl-waiting')">Waiting (${waiting.length})</div>
+    <div class="tab" onclick="switchWLTab(this,'wl-approved')">Approved (${approved.length})</div>
+    <div class="tab" onclick="switchWLTab(this,'wl-rejected')">Rejected (${rejected.length})</div>
+  </div>`;
+
+  // Waiting tab
+  html+=`<div class="tab-content active" id="wl-waiting"><div class="tbl-wrap"><table>
+    <thead><tr><th>#</th><th>Creator</th><th>Followers</th><th>Score</th><th>Apply</th><th>Alasan</th><th>Aksi</th></tr></thead>
+    <tbody>${waiting.map((a,i)=>{
+      const c=getCreatorById(a.creator_id);
+      const sc=parseFloat(c?.score_total)||0;
+      return`<tr>
+        <td style="color:var(--ink-g);font-weight:500;">#${i+1}</td>
+        <td><div class="td-name">${a.creator_name}</div><div class="td-ig">@${a.creator_id}</div>${c?'<div style="font-size:11px;color:var(--ink-g);">'+(c.niche||'—')+' · '+(c.domisili||'')+'</div>':''}</td>
+        <td>${fmt(c?.followers_ig||0)}</td>
+        <td><div class="score-bar"><div class="score-track"><div class="score-fill ${scoreClass(sc)}" style="width:${sc}%"></div></div><strong>${sc||'—'}</strong></div></td>
+        <td style="font-size:12px;color:var(--ink-g);">${(a.applied_at||'').replace('T',' ').slice(0,16)}</td>
+        <td style="max-width:160px;font-size:12px;">${a.apply_reason||'—'}</td>
+        <td><div style="display:flex;gap:5px;">
+          <button class="btn btn-approve btn-sm" onclick="approveAssignment('${a.assignment_id}','${a.creator_name}','${campId}')">✓ Approve</button>
+          <button class="btn btn-reject btn-sm" onclick="rejectAssignment('${a.assignment_id}','${a.creator_name}','${campId}')">✕ Reject</button>
+          <button class="btn btn-ghost btn-sm" onclick='showCreatorProfile("${a.creator_id}")'>Profile</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div></div>`;
+
+  // Approved tab
+  html+=`<div class="tab-content" id="wl-approved"><div class="tbl-wrap"><table>
+    <thead><tr><th>Creator</th><th>Status</th><th>Rate</th><th>Post URL</th></tr></thead>
+    <tbody>${approved.map(a=>`<tr>
+      <td><div class="td-name">${a.creator_name}</div><div class="td-ig">@${a.creator_id}</div></td>
+      <td>${statusBadge(a.status)}</td>
+      <td>${a.rate_agreed?fmtIDR(a.rate_agreed):'—'}</td>
+      <td>${a.post_url?`<a href="${a.post_url}" target="_blank" style="color:var(--accent);font-size:12px;">Lihat post</a>`:'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+
+  // Rejected tab
+  html+=`<div class="tab-content" id="wl-rejected"><div class="tbl-wrap"><table>
+    <thead><tr><th>Creator</th><th>Catatan admin</th></tr></thead>
+    <tbody>${rejected.map(a=>`<tr>
+      <td><div class="td-name">${a.creator_name}</div></td>
+      <td style="font-size:12px;color:var(--ink-g);">${a.notes_admin||'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+
+  document.getElementById('wlContent').innerHTML=html;
+}
+
+function switchWLTab(el,id){
+  el.closest('.section,#wlContent').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.closest('.section,#wlContent').querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function approveAssignment(aId,name,campId){
+  const a=DB.assignments.find(x=>x.assignment_id===aId);
+  if(a){a.status='approved';}
+  toast(name+' diapprove ✓');
+  renderWaitingList(campId);
+  renderDashboard();
+}
+function rejectAssignment(aId,name,campId){
+  const a=DB.assignments.find(x=>x.assignment_id===aId);
+  if(a){a.status='rejected';a.notes_admin='Tidak cocok untuk campaign ini';}
+  toast(name+' direject','error');
+  renderWaitingList(campId);
+  renderDashboard();
+}
+function quickApprove(aId,name){
+  const a=DB.assignments.find(x=>x.assignment_id===aId);
+  if(a){a.status='approved';}
+  toast(name+' diapprove ✓');
+  renderDashboard();
+}
+function quickReject(aId,name){
+  const a=DB.assignments.find(x=>x.assignment_id===aId);
+  if(a){a.status='rejected';}
+  toast(name+' direject');
+  renderDashboard();
+}
+
+// ─── SHARE MODAL ─────────────────────────────────────────────
+function openShareModal(campId){
+  const camp=DB.campaigns.find(c=>c.campaign_id===campId);
+  if(!camp)return;
+  const applyLink=FORM_BASE+'?campaignId='+campId;
+  const waText=encodeURIComponent(
+    `🎯 *${camp.campaign_name}*\n`+
+    `Brand: ${camp.brand_name}\n`+
+    `Platform: ${camp.platform}\n`+
+    `Deliverable: ${camp.deliverables}\n`+
+    `Deadline posting: ${camp.deadline_posting}\n\n`+
+    `Slot tersedia — siapa cepat dia apply!\n`+
+    `👇 Apply di sini:\n${applyLink}\n\n`+
+    `*Syarat:* Creator aktif di database & tidak sedang dalam campaign lain.`
+  );
+  const waShareLink='https://wa.me/?text='+waText;
+
+  document.getElementById('shareModalBody').innerHTML=`
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);margin-bottom:6px;">Link apply creator</div>
+      <div class="share-link-box" id="shareLinkText">${applyLink}</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="copyShareLink()">Copy link</button>
+        <a href="${waShareLink}" target="_blank"><button class="btn btn-primary btn-sm">Buka di WhatsApp</button></a>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-g);margin-bottom:10px;">Preview pesan WA</div>
+      <div style="background:var(--surface2);border-radius:12px;padding:14px 16px;font-size:13px;line-height:1.7;color:var(--ink);border:1px solid var(--border);">
+        🎯 <strong>${camp.campaign_name}</strong><br>
+        Brand: ${camp.brand_name}<br>
+        Platform: ${camp.platform}<br>
+        Deliverable: ${camp.deliverables}<br>
+        Deadline posting: ${camp.deadline_posting}<br><br>
+        Slot tersedia — siapa cepat dia apply!<br>
+        👇 Apply di sini:<br>
+        <span style="color:var(--blue);">${applyLink}</span>
+      </div>
+    </div>
+    <div class="share-steps">
+      <div class="share-step"><div class="share-step-text"><strong>Copy link atau klik "Buka di WhatsApp"</strong> untuk share langsung ke WA community grup kamu.</div></div>
+      <div class="share-step"><div class="share-step-text"><strong>Link otomatis load campaign yang benar</strong> — creator tidak bisa manipulasi campaign ID karena divalidasi di backend.</div></div>
+      <div class="share-step"><div class="share-step-text"><strong>Setelah creator apply</strong>, mereka masuk waiting list dan kamu approve di halaman Waiting List.</div></div>
+    </div>
+  `;
+  openModal('shareModal');
+}
+
+function copyShareLink(){
+  const txt=document.getElementById('shareLinkText');
+  if(txt){navigator.clipboard.writeText(txt.textContent).then(()=>toast('Link dicopy! ✓'));}
+}
+
+// ─── CREATE CAMPAIGN ──────────────────────────────────────────
+function createCampaignDemo(){
+  const brand=document.getElementById('nc-brand').value;
+  const name=document.getElementById('nc-name').value;
+  if(!brand||!name){toast('Nama brand dan campaign wajib diisi','error');return;}
+  const newId='CAM-NEW-'+Date.now().toString().slice(-4);
+  DB.campaigns.push({
+    campaign_id:newId,brand_name:brand,campaign_name:name,
+    platform:document.getElementById('nc-platform').value,
+    slots_total:document.getElementById('nc-slots').value||5,
+    deliverables:document.getElementById('nc-deliverables').value,
+    deadline_posting:document.getElementById('nc-deadline').value,
+    target_niche:document.getElementById('nc-niche').value,
+    status:'open',objective:'Brand Awareness',
+  });
+  closeModal('createCampaignModal');
+  toast('Campaign "'+ name +'" berhasil dibuat! ID: '+newId);
+  showPage('campaigns');
+  renderCampaigns('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+renderDashboard();
+</script>
+</body>
+</html>
