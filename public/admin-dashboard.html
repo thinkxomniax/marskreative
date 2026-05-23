@@ -400,9 +400,9 @@ const DB={"creators":[{"creator_id":"rizkyandini","created_at":"2025-12-18 08:55
 
 // ─── HELPERS ─────────────────────────────────────────────────
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyv6GMG2zgOUrEu4zx1l7J0ifyAt5QA0vBPCHvSif0XLjkh_OpYIaZG4WzwC4--idYH/exec';
-const DEMO_MODE = true;
+const DEMO_MODE = false;
 const WA_LINK = 'https://chat.whatsapp.com/XXXXXXXXX';
-const FORM_BASE = 'https://yoursite.com/creator-campaign-apply.html';
+const FORM_BASE = 'https://marskreative.vercel.app/apply';
 const ONBOARDING_URL = 'https://yoursite.com/creator-onboarding-form.html';
 
 function fmt(n){n=parseInt(n)||0;if(n>=1000000)return(n/1e6).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'K';return n.toString();}
@@ -748,7 +748,7 @@ function quickReject(aId,name){
 function openShareModal(campId){
   const camp=DB.campaigns.find(c=>c.campaign_id===campId);
   if(!camp)return;
-  const applyLink=FORM_BASE+'?campaignId='+campId;
+  const applyLink=FORM_BASE+'/'+campId;
   const waText=encodeURIComponent(
     `🎯 *${camp.campaign_name}*\n`+
     `Brand: ${camp.brand_name}\n`+
